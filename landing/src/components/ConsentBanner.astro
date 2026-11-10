@@ -1,0 +1,28 @@
+---
+// ConsentBanner (brand book): shown by the script in the opt-in copy (the EEA, the UK, Switzerland, unknown countries)
+// until a choice; "Privacy choices" opens its settings in every copy. Copy: tasks/landing/copy.md, consent banner.
+---
+<div class="ew-consent" id="consent" role="dialog" aria-modal="false" aria-labelledby="consent-title" hidden>
+  <div class="ew-consent__part" data-consent-part="summary">
+    <p class="ew-consent__title" id="consent-title">Cookies for measuring our ads</p>
+    <p>We use cookies to count visits and see which ads bring people here (Google, Meta and TikTok). They stay off unless you allow them.</p>
+    <div class="ew-consent__actions">
+      <button type="button" class="ew-btn ew-btn--secondary" data-consent="reject">Reject all</button>
+      <button type="button" class="ew-btn ew-btn--secondary" data-consent="accept">Accept all</button>
+    </div>
+    <div class="ew-consent__more"><button type="button" data-consent="choose">Choose</button><a href="/cookies/">Cookie policy</a></div>
+  </div>
+  <div class="ew-consent__part" data-consent-part="settings" hidden>
+    <p class="ew-consent__title">Choose cookies</p>
+    <ul class="ew-consent__list">
+      <li><div><strong>Necessary</strong><span>Keeps the page working and remembers your choice. Always on.</span></div><input class="ew-switch" type="checkbox" role="switch" checked disabled aria-label="Necessary cookies, always on"></li>
+      <li><div><strong>Measurement</strong><span>Google Analytics counts visits and which page versions people use.</span></div><input class="ew-switch" type="checkbox" role="switch" data-consent-cat="measurement" aria-label="Measurement cookies"></li>
+      <li><div><strong>Advertising</strong><span>Meta, TikTok and Google Ads measure our ads and show them to people like you.</span><span class="ew-consent__note" id="consent-gpc" hidden>Off, because your browser sends a Global Privacy Control signal.</span></div><input class="ew-switch" type="checkbox" role="switch" data-consent-cat="advertising" aria-label="Advertising cookies"></li>
+    </ul>
+    <div class="ew-consent__actions">
+      <button type="button" class="ew-btn ew-btn--secondary" data-consent="save">Save choices</button>
+      <button type="button" class="ew-btn ew-btn--secondary" data-consent="accept">Accept all</button>
+    </div>
+    <div class="ew-consent__more"><a href="/cookies/">Cookie policy</a></div>
+  </div>
+</div>

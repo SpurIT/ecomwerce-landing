@@ -1,0 +1,21 @@
+---
+// SiteHeader (brand book): the lockup, Pricing and one small Install button; sticky.
+import lockup from '../../../brand/logo/ecomwerce-lockup.svg?url';
+import lockupWhite from '../../../brand/logo/ecomwerce-lockup-white.svg?url';
+import { installHref } from '../lib/site.mjs';
+
+interface Props { campaign: string; onPage?: boolean }
+const { campaign, onPage = true } = Astro.props;
+---
+<header class="ew-header">
+  <div class="lp-wrap ew-header__in">
+    <a class="ew-header__logo" href={onPage ? '#top' : '/'} aria-label={onPage ? 'Ecomwerce, back to the top' : 'Ecomwerce, home page'}>
+      <img class="ew-light-only" src={lockup} width="171" height="32" alt="">
+      <img class="ew-dark-only" src={lockupWhite} width="171" height="32" alt="">
+    </a>
+    <nav class="ew-header__nav" aria-label="Page">
+      <a class="ew-header__link" href={onPage ? '#pricing' : '/#pricing'}>Pricing</a>
+      <a class="ew-btn ew-btn--sm" data-install="header" href={installHref(campaign, 'header')}>Install free</a>
+    </nav>
+  </div>
+</header>

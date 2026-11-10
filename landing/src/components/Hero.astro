@@ -1,0 +1,62 @@
+---
+// Hero (brand book): eyebrow, the variant's headline, lead, Install, the launch stand-in or "See a sample page" (g3),
+// the in-app hint (shown by the script in Instagram, Facebook and TikTok only), the price sentence, the language line,
+// and the product card on the orange stage with the build motion (ProductCard, ew-card--build), compact on phones.
+import { SAMPLE } from '../data/landing.mjs';
+import { installHref, isOpen } from '../lib/site.mjs';
+
+interface Props { variant: { eyebrow: string; lead: string }; headline: string; campaign: string }
+const { variant, headline, campaign } = Astro.props;
+const real = isOpen('g3');
+if (real && !(SAMPLE.heroPhoto && SAMPLE.heroTitle && SAMPLE.heroPrice)) {
+  throw new Error('g3 is open, but SAMPLE.heroPhoto, heroTitle or heroPrice in src/data/landing.mjs is empty: the hero shows a real product only');
+}
+const title = real ? SAMPLE.heroTitle : 'Ceramic pour-over set';
+const price = real ? SAMPLE.heroPrice : '$34.00';
+const label = real
+  ? `A product page card: a photo of ${SAMPLE.heroTitle}, its title, the price ${SAMPLE.heroPrice} and an Add to cart button`
+  : 'A product page card: a photo of a ceramic pour-over set, its title, the price $34.00 and an Add to cart button';
+---
+<section class="lp-hero" aria-labelledby="hero-title">
+  <div class="lp-wrap">
+    <div class="ew-hero">
+      <div class="ew-hero__text">
+        <span class="ew-eyebrow">{variant.eyebrow}</span>
+        <h1 class="ew-display-xl" id="hero-title">{headline}</h1>
+        <p class="ew-lead">{variant.lead}</p>
+        <div class="lp-hero__actions">
+          <a class="ew-btn ew-btn--lg" data-install="hero" href={installHref(campaign, 'hero')}>Install free</a>
+          {real
+            ? <a class="ew-btn ew-btn--secondary ew-btn--lg" href="#sample">See a sample page</a>
+            : <a class="ew-textlink" href="#how">How it works</a>}
+        </div>
+        <div class="lp-inapp" data-inapp hidden>
+          <p>Installing needs your Shopify login. Not logged in here? Open this page in your browser, or copy the link.</p>
+          <button type="button" class="ew-btn ew-btn--secondary ew-btn--sm" data-copy-link aria-live="polite">Copy link</button>
+          <div class="lp-inapp__field" data-copy-field hidden>
+            <label for="page-link">Link to this page</label>
+            <input id="page-link" type="text" readonly>
+          </div>
+        </div>
+        <div class="lp-hero__fine">
+          <p class="ew-small">Free to install. Your first 2 product pages are free, then $3 per product page. Monthly cap of $60.</p>
+          <p class="ew-note">Product pages are written in English.</p>
+        </div>
+      </div>
+      <div class="ew-stage ew-hero__stage">
+        <div class="lp-card-figure" role="img" aria-label={label}>
+          <div class="ew-card ew-card--build ew-card--compact-sm" aria-hidden="true">
+            <div class="ew-card__window">
+              {real
+                ? <img class="ew-photo" src={SAMPLE.heroPhoto.src} width={SAMPLE.heroPhoto.width} height={SAMPLE.heroPhoto.height} alt="" fetchpriority="high">
+                : <svg class="ew-photo" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice"><rect width="400" height="400" fill="#F3EEE8"/><ellipse cx="200" cy="322" rx="122" ry="13" fill="#E4DBD1"/><path d="M118 128h164l-48 98h-68z" fill="#E7DCD1"/><rect x="140" y="216" width="120" height="14" rx="7" fill="#D7CBBF"/><path d="M128 238h144v46a40 40 0 0 1-40 40h-64a40 40 0 0 1-40-40z" fill="#FFFFFF" stroke="#D7CBBF" stroke-width="3"/><path d="M272 252h14a22 22 0 0 1 0 44h-10" fill="none" stroke="#D7CBBF" stroke-width="9"/></svg>}
+            </div>
+            <div class="ew-card__titlewrap"><div class="ew-card__line"></div><p class="ew-card__title">{title}</p></div>
+            <span class="ew-card__price">{price}</span>
+            <span class="ew-btn ew-btn--on-orange ew-btn--block ew-card__buy">Add to cart</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

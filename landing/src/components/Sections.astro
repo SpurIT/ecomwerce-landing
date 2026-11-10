@@ -1,0 +1,131 @@
+---
+// How it works (g4), what's on the page (g3), real data only (g2), pricing and the faq (g2, g4), in the order of
+// 3-landing-page.md. A closed gate's part is not in the html; its launch line is (copy.md, gates).
+import Icon from './Icon.astro';
+import { SAMPLE } from '../data/landing.mjs';
+import { installHref, isOpen } from '../lib/site.mjs';
+
+interface Props { campaign: string }
+const { campaign } = Astro.props;
+const time = isOpen('g4');
+const sample = isOpen('g3');
+const honest = isOpen('g2');
+if (sample && !(SAMPLE.screenshot && SAMPLE.product && SAMPLE.built)) {
+  throw new Error('g3 is open, but SAMPLE.screenshot, product or built in src/data/landing.mjs is empty: the section shows a real build only');
+}
+---
+<section class="lp-section" id="how" aria-labelledby="how-title">
+  <div class="lp-wrap">
+    <div class="lp-head">
+      <span class="ew-eyebrow">How it works</span>
+      <h2 class="ew-display-l" id="how-title">From your catalog to a product page</h2>
+    </div>
+    <ol class="ew-steps">
+      <li class="ew-step"><span class="ew-step__n">01</span><h3 class="ew-h">Pick a product</h3><p class="ew-p">Choose products from your Shopify catalog. Their photos and details are where the page starts.</p></li>
+      <li class="ew-step"><span class="ew-step__n">02</span><h3 class="ew-h">Ecomwerce writes the page</h3><p class="ew-p">A headline, benefits, reasons it stands out and an FAQ, in English, in a new theme on your store. {time ? <Fragment>About two minutes for one product.<sup>1</sup></Fragment> : 'The app shows how long it takes before you start, and you can close it while it works.'}</p></li>
+      <li class="ew-step"><span class="ew-step__n">03</span><h3 class="ew-h">Preview, then go live</h3><p class="ew-p">See the page on your store first. It goes live only when you press Go live, and your current theme stays in your theme library.</p></li>
+    </ol>
+    {time && <p class="ew-note lp-footnote">1. One product, product page only: 4 of 5 builds on our test store finished within 1 min 57 s (October 2026).</p>}
+  </div>
+</section>
+
+{sample && (
+<section class="lp-section" id="sample" aria-labelledby="sample-title">
+  <div class="lp-wrap lp-cols">
+    <div class="lp-span-5">
+      <div class="lp-head">
+        <span class="ew-eyebrow">What’s on the page</span>
+        <h2 class="ew-display-l" id="sample-title">A real page, built by Ecomwerce</h2>
+        <p class="ew-lead">Built on our development store from one catalog product and its real photos.</p>
+      </div>
+      <ol class="ew-legend">
+        <li><b>1</b><span>Headline and photos</span></li>
+        <li><b>2</b><span>Your price, variants and Add to cart, from the theme</span></li>
+        <li><b>3</b><span>Benefits</span></li>
+        <li><b>4</b><span>Why it stands out</span></li>
+        <li><b>5</b><span>FAQ</span></li>
+      </ol>
+    </div>
+    <figure class="lp-span-7 ew-anatomy">
+      <img class="lp-anatomy__img" src={SAMPLE.screenshot.src} width={SAMPLE.screenshot.width} height={SAMPLE.screenshot.height} alt={SAMPLE.screenshot.alt} loading="lazy">
+      <figcaption class="ew-note" style="margin-top:12px">{SAMPLE.product} on our development store, built {SAMPLE.built}.</figcaption>
+    </figure>
+  </div>
+</section>
+)}
+
+{honest && (
+<section class="lp-section" id="honest" aria-labelledby="honest-title">
+  <div class="lp-wrap">
+    <div class="lp-head">
+      <span class="ew-eyebrow">Real data only</span>
+      <h2 class="ew-display-l" id="honest-title">No invented proof on your pages</h2>
+      <p class="ew-lead">Ecomwerce never makes up reviews, ratings or stock levels. Social proof comes from your real data, or it stays off the page.</p>
+    </div>
+    <div class="ew-honest">
+      <div class="ew-honest__col ew-never"><h3 class="ew-heading-3">Never added by Ecomwerce</h3><ul>
+        <li><Icon name="x" />Invented reviews or star ratings</li>
+        <li><Icon name="x" />Review counts or “people bought this” lines</li>
+        <li><Icon name="x" />Stock bars or countdown timers</li>
+        <li><Icon name="x" />“Verified” badges</li>
+      </ul></div>
+      <div class="ew-honest__col ew-always"><h3 class="ew-heading-3">Always yours</h3><ul>
+        <li><Icon name="check" />Your photos and product details</li>
+        <li><Icon name="check" />Your real reviews, when you add them</li>
+        <li><Icon name="check" />Your theme library, and your click to go live</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+)}
+
+<section class="lp-section lp-pricing" id="pricing" aria-labelledby="pricing-title">
+  <div class="lp-wrap lp-cols">
+    <div class="lp-span-6">
+      <div class="lp-head" style="margin-bottom:0">
+        <span class="ew-eyebrow">Pricing</span>
+        <h2 class="ew-display-l" id="pricing-title">Pay per product page</h2>
+        <p class="ew-lead">Free to install. Your first 2 product pages are free, then $3 per product page.</p>
+      </div>
+      <ul class="ew-bill">
+        <li>A page is charged when its build is ready.</li>
+        <li>While your free pages last, a build takes up to 2 products. With the plan, up to 10.</li>
+        <li>You choose the plan in Shopify when your 2 free pages are used.</li>
+        <li>The $60 cap counts 30 days from the day you choose the plan.</li>
+      </ul>
+    </div>
+    <div class="lp-span-6">
+      <div class="ew-price">
+        <span class="ew-eyebrow">One plan</span>
+        <h3 class="ew-heading-2">Pay as you go</h3>
+        <div class="ew-price__big"><b>$3</b><span class="ew-num">per product page</span></div>
+        <ul>
+          <li><Icon name="check" />Free to install, no monthly fee</li>
+          <li><Icon name="check" />Your first 2 product pages are free</li>
+          <li><Icon name="check" />Monthly cap of $60</li>
+          <li><Icon name="check" />Failed builds are never charged</li>
+          <li><Icon name="check" />Billed on your Shopify invoice</li>
+        </ul>
+        <a class="ew-btn ew-btn--block ew-btn--lg" data-install="pricing" href={installHref(campaign, 'pricing')}>Install free</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section lp-faq" id="faq" aria-labelledby="faq-title">
+  <div class="lp-wrap lp-cols">
+    <div class="lp-span-4"><div class="lp-head"><span class="ew-eyebrow">FAQ</span><h2 class="ew-display-l" id="faq-title">Questions before you install</h2></div></div>
+    <div class="lp-span-8">
+      <div class="ew-faq">
+        <details open><summary>Will it change my live store?</summary><p>Not until you press Go live. Ecomwerce builds the page in a new theme on your store, based on Horizon, Shopify’s free theme, and you preview it first. When you go live, that theme becomes your live theme and your current one moves to your theme library, so you can switch back.</p></details>
+        <details><summary>What does Ecomwerce write?</summary><p>The product page: a headline, benefits, reasons it stands out and an FAQ, from your product’s photos and details. It can add AI images too, which you can switch off before a build. You can edit the page in the Shopify theme editor.</p></details>
+        <details><summary>What does it cost?</summary><p>Free to install. Your first 2 product pages are free, then $3 per product page. Monthly cap of $60. Failed builds are never charged, and you pay on your Shopify invoice.</p></details>
+        <details><summary>How long does a page take?</summary><p>The app shows an estimate before you start, and you can close it while the page is built.{time && ' On our test store, 4 of 5 one-product builds finished within 1 min 57 s (October 2026).'}</p></details>
+        <details><summary>Which languages does it write in?</summary><p>English for now.</p></details>
+        <details><summary>Is my store ready to sell after this?</summary><p>Not by itself. Ecomwerce writes the product page. Payments, shipping, policies and your domain stay in your Shopify settings.</p></details>
+        <details><summary>What happens if I uninstall?</summary><p>The pages are built with Ecomwerce blocks, so their content disappears from your store when you uninstall. The app says so before you go live.</p></details>
+        {honest && <details><summary>Does it add reviews or ratings?</summary><p>Only real ones. Ecomwerce never invents reviews, ratings or counters. If you add your real reviews, the page shows them.</p></details>}
+      </div>
+    </div>
+  </div>
+</section>

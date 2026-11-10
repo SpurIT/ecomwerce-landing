@@ -1,0 +1,78 @@
+/* ecomwerce.com page layout. Values come from the tokens (tokens.generated.css, from the brand's tokens.json), the
+   components from the brand's bundle.css (ew-*). lp-* is the page layout only, ported from tasks/landing/design/landing.css. */
+html{scroll-behavior:smooth;scroll-padding-top:88px}
+body{margin:0;background:var(--surface);color:var(--text)}
+body.ew{font-size:var(--text-body);line-height:1.6}
+img,svg{max-width:100%}
+a{color:inherit}
+.lp-wrap{max-width:1200px;margin:0 auto;padding-inline:24px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* hero */
+.lp-hero{padding:64px 0 var(--space-24)}
+.lp-hero + .lp-section{padding-top:0}
+.lp-hero .ew-hero__text{gap:22px}
+.lp-hero__actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.lp-hero__fine{display:flex;flex-direction:column;gap:6px}
+.lp-hero .ew-hero__stage{min-height:520px;box-sizing:border-box}
+.lp-card-figure{margin:0;width:100%;max-width:300px}
+.lp-card-figure img{display:block;width:100%;height:100%;object-fit:cover}
+
+/* in-app browsers (Instagram, Facebook, TikTok): the hint under the hero button; the script shows it */
+.lp-inapp{display:flex;flex-direction:column;align-items:flex-start;gap:10px;max-width:34em}
+.lp-inapp[hidden],.lp-inapp__field[hidden]{display:none}
+.lp-inapp p{margin:0;font-size:var(--text-small);line-height:1.5;color:var(--text-2)}
+.lp-inapp__field{display:flex;flex-direction:column;gap:4px;width:100%}
+.lp-inapp__field label{font-size:13px;line-height:1.4;color:var(--text-3)}
+.lp-inapp__field input{box-sizing:border-box;width:100%;font:400 15px/1.4 var(--font-sans);color:var(--text);background:var(--surface);border:1.5px solid var(--control-border);border-radius:var(--radius-s);padding:10px 12px}
+
+/* sections */
+.lp-section{padding:var(--space-24) 0}
+.lp-section + .lp-section{padding-top:0}
+.lp-head{display:flex;flex-direction:column;gap:16px;margin-bottom:48px;max-width:760px}
+.lp-cols{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px;align-items:start}
+.lp-span-4{grid-column:span 4}.lp-span-5{grid-column:span 5}.lp-span-6{grid-column:span 6}.lp-span-7{grid-column:span 7}.lp-span-8{grid-column:span 8}
+.lp-footnote{margin-top:24px}
+.lp-anatomy__img{display:block;width:100%;height:auto;border-radius:10px}
+.lp-pricing .ew-price{max-width:none}
+.lp-faq .ew-faq{max-width:none}
+.ew-footer{margin-top:var(--space-24)}
+
+/* legal pages and the 404 */
+.lp-doc{padding:64px 0 0;max-width:760px}
+.lp-doc .ew-display-l{margin-bottom:20px}
+.lp-doc h2{font:700 var(--heading-3)/1.25 var(--font-display);letter-spacing:-.01em;margin:40px 0 12px}
+.lp-doc p,.lp-doc li{color:var(--text-2);max-width:65ch;margin:0 0 12px}
+.lp-doc table{border-collapse:collapse;width:100%;font-size:var(--text-small);margin:8px 0 16px}
+.lp-doc th,.lp-doc td{text-align:left;vertical-align:top;padding:10px 12px 10px 0;border-bottom:1px solid var(--line)}
+.lp-doc th{font-weight:600;color:var(--text)}
+.lp-doc td{color:var(--text-2)}
+.lp-draft{display:inline-block;background:var(--orange-tint);color:var(--text)!important;border-radius:8px;padding:8px 12px;font-size:var(--text-small)}
+
+/* tablets: the hero stacks, the stage follows the text with the full card */
+@media (max-width:900px){
+  .lp-hero .ew-hero{grid-template-columns:1fr}
+  .lp-hero .ew-hero__stage{min-height:0;padding:32px}
+}
+
+/* phones */
+@media (max-width:720px){
+  html{scroll-padding-top:68px}
+  .lp-wrap{padding-inline:16px}
+  .lp-hero{padding:20px 0 var(--space-16)}
+  .lp-hero .ew-hero{gap:24px}
+  .lp-hero .ew-hero__text{gap:16px}
+  .lp-hero__actions .ew-btn--lg{height:52px;padding:0 20px;font-size:16px}
+  .lp-hero .ew-hero__stage{min-height:0;padding:16px}
+  .lp-card-figure{max-width:none}
+  .lp-section{padding:var(--space-16) 0}
+  .lp-head{margin-bottom:32px}
+  .lp-cols{grid-template-columns:1fr}
+  .lp-cols>*{grid-column:auto}
+  .ew-footer{margin-top:var(--space-16)}
+  .lp-doc{padding-top:32px}
+  .lp-doc table,.lp-doc tbody,.lp-doc tr,.lp-doc td{display:block}
+  .lp-doc thead{display:none}
+  .lp-doc tr{border-bottom:1px solid var(--line);padding:8px 0}
+  .lp-doc td{border:0;padding:2px 0}
+}

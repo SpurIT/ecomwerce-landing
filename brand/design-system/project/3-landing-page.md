@@ -10,15 +10,15 @@ The landing page has one job: turn a click on an ad into a click on Install in t
 
 ## Sections, in order
 
-1. Header: the lockup on the left; a "Pricing" link and a small primary button "Install free" on the right.
+1. Header (`SiteHeader`): the lockup on the left; a "Pricing" link and a small primary button "Install free" on the right.
 2. Hero (`Hero`): eyebrow, the promise in `display-xl`, a lead in `text-lead`, the primary button "Install free" and a secondary "See a sample page", then the price sentence in `text-small`. The orange stage with a product card on the right, with the build motion once.
-3. How it works (`Steps`): pick a product; Ecomwerce writes the page in your theme; preview, then go live. The order is real, so the steps carry numbers.
-4. What's on the page: a real page Ecomwerce generated, with short labels on its parts (headline, benefits, FAQ, buy box). A real build on a development store, never a mock.
+3. How it works (`Steps`): pick a product; Ecomwerce writes the page in a new theme on your store; preview, then go live. The order is real, so the steps carry numbers.
+4. What's on the page (`PageAnatomy`): a real page Ecomwerce generated, with short labels on its parts (headline, benefits, FAQ, buy box). A real build on a development store, never a mock.
 5. Real data only (`HonestyList`): what Ecomwerce never adds, and what stays the merchant's. Publish this section only after the open P0 items on app-added proof in docs/pre-launch-backlog.md are fixed (the preset stock bar, the app-added "verified" badge, the default quotes and claims in hand-added blocks). Until then the page would promise something the app does not do yet.
 6. Pricing (`PricingCard`): pay as you go, the price sentence word for word, the $60 cap, billed on the Shopify invoice.
 7. FAQ (`FAQ`): the merchant's questions in their words. Answers are drafts: check each against the app before launch.
-8. Final call: the promise again in `display-l`, the primary button, and the official "Find it on the Shopify App Store" badge.
-9. Footer: the lockup, "Made by SpurIT", support email, privacy policy, terms.
+8. Final call (`FinalCall`): the promise again in `display-l`, the primary button, and the official "Find it on the Shopify App Store" badge.
+9. Footer (`SiteFooter`): the lockup, "Made by SpurIT", support email, privacy policy, terms, cookies, a legal notice and "Privacy choices".
 
 ## Headline options
 
@@ -34,7 +34,7 @@ The landing page has one job: turn a click on an ad into a click on Install in t
 
 ## Build notes
 
-- Load fonts from Google Fonts with `display=swap`; preload Gabarito 800 and Host Grotesk 400.
+- Serve the fonts from the page's own domain (woff2, latin, only the weights in use) with `font-display: swap`; preload Gabarito 800 and Host Grotesk 400. No request to Google Fonts: an EU visitor would send it their IP address before consent.
 - The hero product photo is the largest element: serve it as AVIF or WebP with fixed dimensions.
-- Put the Meta Pixel and GA4 on the page, with the same IDs as the listing's tracking fields.
+- Put the Meta Pixel and GA4 on the page, with the same IDs as the listing's tracking fields. In the EEA, the UK and Switzerland nothing loads before the visitor's choice (`ConsentBanner`); "Privacy choices" in the footer reopens it everywhere.
 - Write every color, size, radius and space from `tokens.css`; take components from `components/bundle.css`.

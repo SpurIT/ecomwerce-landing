@@ -1,0 +1,17 @@
+---
+// The 404 (served by CloudFront for any missing path, to every country): no script, no tag, no "Privacy choices".
+import Base from '../layouts/Base.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+---
+<Base title="Ecomwerce: page not found" measure={false}>
+  <SiteHeader campaign="404" onPage={false} />
+  <main id="top" class="lp-wrap">
+    <article class="lp-doc">
+      <h1 class="ew-display-l">Page not found</h1>
+      <p>There is no page at this address.</p>
+      <p><a class="ew-textlink" href="/">Go to the home page</a></p>
+    </article>
+  </main>
+  <SiteFooter campaign="404" choices={false} />
+</Base>

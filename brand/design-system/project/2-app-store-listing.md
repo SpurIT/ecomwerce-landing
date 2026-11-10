@@ -6,7 +6,7 @@ The listing is where every landing page visitor ends up. It has to look like the
 
 - Proposed app name: "Ecomwerce: AI Product Pages" (27 characters, brand first). The name in the Dev Dashboard and on the listing must match or be similar (requirement 4.1.1). Proposal, not decided.
 - Proposed app card subtitle: "A product page for every product you test". No data or statistics here: Shopify keeps numbers out of the subtitle. Proposal.
-- Proposed introduction (100 characters at most): "Pick a product and get a product page in your own theme. Preview it, then go live when you're ready." Proposal; check the count in the form.
+- Proposed introduction (100 characters at most): "Pick a product and get its product page on your store. Preview it, then go live when you're ready." Proposal; check the count in the form.
 
 ## Icon
 

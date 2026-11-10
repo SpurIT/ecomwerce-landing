@@ -1,0 +1,61 @@
+---
+// The document shell: head (title, description, canonical, robots, Open Graph, favicons, theme-color, font preloads,
+// the content security policy), the consent banner first in the body (the first tab stop when it shows), the page,
+// and the one script. measure=false (the 404) loads no script and no tag: one file serves every country there.
+import '../styles/fonts.css';
+import '../styles/tokens.generated.css';
+import '../../../brand/design-system/project/components/bundle.css';
+import '../styles/landing.css';
+import gabarito800 from '@fontsource/gabarito/files/gabarito-latin-800-normal.woff2?url';
+import hostGrotesk400 from '@fontsource/host-grotesk/files/host-grotesk-latin-400-normal.woff2?url';
+import faviconSvg from '../../../brand/logo/ecomwerce-favicon.svg?url';
+import favicon32 from '../../../brand/logo/ecomwerce-favicon-32.png?url';
+import touchIcon from '../../../brand/logo/ecomwerce-icon-180.png?url';
+import ogImage from '../assets/og-1200x630.png?url';
+import ConsentBanner from '../components/ConsentBanner.astro';
+import { SITE } from '../data/landing.mjs';
+import { csp, tags } from '../lib/site.mjs';
+
+interface Props { title: string; path?: string; index?: boolean; optin?: boolean; measure?: boolean; campaign?: string; description?: string }
+const { title, path, index = false, optin = false, measure = true, campaign = '', description = SITE.description } = Astro.props;
+const canonical = path ? new URL(path, SITE.origin).href : undefined;
+const og = new URL(ogImage, SITE.origin).href;
+const used = measure ? tags : {};
+// read by src/scripts/landing.js; the ids are public in any page that loads a tag
+const config = JSON.stringify({ geo: optin ? 'optin' : 'optout', campaign, ...used }).replace(/</g, '\\u003c');
+---
+<!doctype html>
+<html lang="en" data-geo={optin ? 'optin' : 'optout'}>
+<head>
+<meta charset="utf-8">
+{import.meta.env.PROD && <meta http-equiv="Content-Security-Policy" content={csp(used)}>}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{title}</title>
+<meta name="description" content={description}>
+{canonical && <link rel="canonical" href={canonical}>}
+<meta name="robots" content={index ? 'index, follow' : 'noindex, follow'}>
+<link rel="preload" href={gabarito800} as="font" type="font/woff2" crossorigin>
+<link rel="preload" href={hostGrotesk400} as="font" type="font/woff2" crossorigin>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content={SITE.name}>
+{canonical && <meta property="og:url" content={canonical}>}
+<meta property="og:title" content={title}>
+<meta property="og:description" content={description}>
+<meta property="og:image" content={og}>
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Ecomwerce product card on orange: a product photo, its title, the price and an Add to cart button">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href={faviconSvg} type="image/svg+xml">
+<link rel="icon" href={favicon32} sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href={touchIcon}>
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15110E" media="(prefers-color-scheme: dark)">
+{measure && <script type="application/json" id="ew-config" set:html={config} />}
+</head>
+<body class="ew">
+{measure && <ConsentBanner />}
+<slot />
+{measure && <script src="../scripts/landing.js"></script>}
+</body>
+</html>

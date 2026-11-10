@@ -1,0 +1,10 @@
+/* The brand's fonts, served from this domain: woff2, latin, only the weights in use (brand README, Type). No request
+   to Google Fonts: the browser would send Google the visitor's IP address before any consent. Files from the pinned
+   @fontsource packages (OFL). Gabarito 800 and Host Grotesk 400 are preloaded in src/layouts/Base.astro. */
+@font-face{font-family:"Gabarito";font-style:normal;font-weight:700;font-display:swap;src:url("../../node_modules/@fontsource/gabarito/files/gabarito-latin-700-normal.woff2") format("woff2")}
+@font-face{font-family:"Gabarito";font-style:normal;font-weight:800;font-display:swap;src:url("../../node_modules/@fontsource/gabarito/files/gabarito-latin-800-normal.woff2") format("woff2")}
+@font-face{font-family:"Host Grotesk";font-style:normal;font-weight:400;font-display:swap;src:url("../../node_modules/@fontsource/host-grotesk/files/host-grotesk-latin-400-normal.woff2") format("woff2")}
+@font-face{font-family:"Host Grotesk";font-style:normal;font-weight:500;font-display:swap;src:url("../../node_modules/@fontsource/host-grotesk/files/host-grotesk-latin-500-normal.woff2") format("woff2")}
+@font-face{font-family:"Host Grotesk";font-style:normal;font-weight:600;font-display:swap;src:url("../../node_modules/@fontsource/host-grotesk/files/host-grotesk-latin-600-normal.woff2") format("woff2")}
+@font-face{font-family:"Geist Mono";font-style:normal;font-weight:400;font-display:swap;src:url("../../node_modules/@fontsource/geist-mono/files/geist-mono-latin-400-normal.woff2") format("woff2")}
+@font-face{font-family:"Geist Mono";font-style:normal;font-weight:500;font-display:swap;src:url("../../node_modules/@fontsource/geist-mono/files/geist-mono-latin-500-normal.woff2") format("woff2")}

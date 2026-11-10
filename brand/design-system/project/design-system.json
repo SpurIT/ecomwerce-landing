@@ -147,8 +147,8 @@
   },
   "lastChange": {
     "by": "Anton Zialionka",
-    "at": "2026-11-10T12:10:13Z",
+    "at": "2026-11-10T18:40:00Z",
     "via": "Claude Code",
-    "note": "First version: product card mark, wordmark, tokens, brand book, listing, landing and ad templates"
+    "note": "Landing components added (SiteHeader, SiteFooter, ConsentBanner, FinalCall, PageAnatomy; ProductCard compact and build), fluid display sizes and the phone sizes in Type, on your store instead of in your own theme, Steps footnote 4 of 5"
   }
 }

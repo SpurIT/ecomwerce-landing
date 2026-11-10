@@ -1,0 +1,63 @@
+---
+// Every page of the site: the three variants and the four legal pages, each built twice, at its path and under
+// /_optin/ (the copy the edge serves to the EEA, the UK, Switzerland and unknown countries: edge/geo.mjs).
+import Base from '../layouts/Base.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import Hero from '../components/Hero.astro';
+import Sections from '../components/Sections.astro';
+import FinalCall from '../components/FinalCall.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { OPTIN_PREFIX, VARIANTS, INPUTS } from '../data/landing.mjs';
+import { LEGAL } from '../data/legal.mjs';
+import { gated } from '../lib/site.mjs';
+
+export function getStaticPaths() {
+  const pages = [
+    ...Object.entries(VARIANTS).map(([id, v]) => ({ kind: 'landing', id, path: v.path })),
+    ...Object.entries(LEGAL).map(([id, d]) => ({ kind: 'legal', id, path: d.path })),
+  ];
+  return pages.flatMap((p) => [false, true].map((optin) => {
+    const full = (optin ? OPTIN_PREFIX : '') + p.path;
+    return { params: { path: full.replace(/^\/|\/$/g, '') || undefined }, props: { ...p, optin } };
+  }));
+}
+
+const { kind, id, path, optin } = Astro.props;
+const v = kind === 'landing' ? VARIANTS[id] : null;
+const d = kind === 'legal' ? LEGAL[id] : null;
+const headline = v ? gated(v.headline) : '';
+---
+{v && (
+<Base title={gated(v.title)} path={path} index={id === 'default'} optin={optin} campaign={id}>
+  <SiteHeader campaign={id} />
+  <main id="top">
+    <Hero variant={v} headline={headline} campaign={id} />
+    <Sections campaign={id} />
+    <FinalCall headline={headline} campaign={id} />
+  </main>
+  <SiteFooter campaign={id} />
+</Base>
+)}
+{d && (
+<Base title={`Ecomwerce: ${d.title.toLowerCase()}`} path={path} index={INPUTS.legalTextsConfirmed} optin={optin} campaign="legal">
+  <SiteHeader campaign="legal" onPage={false} />
+  <main id="top" class="lp-wrap">
+    <article class="lp-doc">
+      <h1 class="ew-display-l">{d.title}</h1>
+      {d.sections.map((s, i) => (
+        <Fragment>
+          {s.h && <h2>{s.h}</h2>}
+          {s.p && s.p.map((p) => <p class={i === 0 ? 'lp-draft' : undefined}>{p}</p>)}
+          {s.table && (
+            <table>
+              <thead><tr><th>Kind</th><th>Cookie</th><th>What it does</th><th>Kept for</th></tr></thead>
+              <tbody>{s.table.map((r) => <tr>{r.map((c) => <td>{c}</td>)}</tr>)}</tbody>
+            </table>
+          )}
+        </Fragment>
+      ))}
+    </article>
+  </main>
+  <SiteFooter campaign="legal" />
+</Base>
+)}

@@ -1,4 +1,4 @@
-Ecomwerce is a Shopify app that turns a product from a merchant's catalog into a product page in the merchant's own theme. We write for people who test products with paid ads: they need a new page for every product, they need it fast, and they have learned to distrust tools that promise magic. The brand is a precise, honest tool with one loud color.
+Ecomwerce is a Shopify app that turns a product from a merchant's catalog into a product page on the merchant's store. We write for people who test products with paid ads: they need a new page for every product, they need it fast, and they have learned to distrust tools that promise magic. The brand is a precise, honest tool with one loud color.
 
 ## The idea
 
@@ -6,7 +6,7 @@ Ecomwerce is a Shopify app that turns a product from a merchant's catalog into a
 - Make three promises, in this order, and none beyond them.
 - A page for every product you test: speed and volume for the test loop (about three products a week, kill or scale after two or three days).
 - Real data only: Ecomwerce never invents reviews, ratings, counters, stock levels or "verified" badges. Social proof comes from the merchant's real data or stays out.
-- Your theme, your click: the page is written into the merchant's own theme and goes live only when they press Go live.
+- Your store, your click: the page is built in a new theme on the merchant's store and goes live only when they press Go live; their current theme stays in their theme library.
 
 ## Voice
 
@@ -43,8 +43,8 @@ Never use: magic, revolutionary, guaranteed, 10x, explode your sales, winning pr
 - Set headlines and the wordmark in Gabarito (`display` family): `display-xl` for the single hero headline, `display-l` for section openers, `heading-1` to `heading-3` below. Tighten tracking as the tokens say; never set Gabarito below 18px.
 - Set everything people read in Host Grotesk (`sans`): `text-body` for paragraphs (65 characters a line at most), `text-lead` under a hero headline, `text-small` for captions and the price sentence, `text-button` for buttons.
 - Set figures in Geist Mono (`mono`): `data-figure` for prices, times and counts, `data-label` for uppercase eyebrows. Mono marks a figure as measured; do not use it for decoration.
-- On phones step every display style down one level: `display-xl` becomes 44px, `display-l` 36px.
-- Load all three from Google Fonts: Gabarito 700 and 800, Host Grotesk 400, 500 and 600, Geist Mono 400 and 500.
+- On phones (720px and narrower) the sizes step down: `display-xl` 44px, `display-l` 36px, `heading-1` 32px, `heading-2` 26px, `heading-3` 20px, `text-lead` 18px; the rest stay. Between 720 and 1440px the two scale with the viewport and keep the token sizes at both ends: `display-xl` is clamp(44px, 4.4vw + 12px, 72px), `display-l` clamp(36px, 2.6vw + 16px, 52px) (classes `ew-display-xl` and `ew-display-l` in bundle.css), so a tablet does not get a desktop headline in a narrow column.
+- The weights in use: Gabarito 700 and 800, Host Grotesk 400, 500 and 600, Geist Mono 400 and 500. The landing page serves them from its own domain (woff2, latin, only these weights) and loads nothing from Google Fonts, because the browser would send Google the visitor's IP address before any consent; previews and documents may load them from Google Fonts.
 
 ## Layout and shape
 

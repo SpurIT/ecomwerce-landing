@@ -96,7 +96,7 @@ const luc = (n, cls = '') => `<svg class="ew-ico ${cls}" viewBox="0 0 24 24" wid
 // placeholder for the merchant's own product photo (never a real brand's product)
 const PHOTO = `<svg class="ew-photo" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Product photo placeholder"><rect width="400" height="400" fill="#F3EEE8"/><ellipse cx="200" cy="322" rx="122" ry="13" fill="#E4DBD1"/><path d="M118 128h164l-48 98h-68z" fill="#E7DCD1"/><rect x="140" y="216" width="120" height="14" rx="7" fill="#D7CBBF"/><path d="M128 238h144v46a40 40 0 0 1-40 40h-64a40 40 0 0 1-40-40z" fill="#FFFFFF" stroke="#D7CBBF" stroke-width="3"/><path d="M272 252h14a22 22 0 0 1 0 44h-10" fill="none" stroke="#D7CBBF" stroke-width="9"/></svg>`
 // inline styles name tokens with a fallback, so a preview still reads where tokens.css is missing
-const FALLBACK = { orange: '#FF6A13', 'ink-fixed': '#1A1410', 'white-fixed': '#FFFFFF', surface: '#FFFFFF', 'surface-2': '#F5F3F0', text: '#1A1410', 'text-2': '#5E554F', 'text-3': '#736963', line: '#E7E1DB', 'font-mono': "'Geist Mono',ui-monospace,monospace", 'font-display': "'Gabarito',system-ui,sans-serif", 'font-sans': "'Host Grotesk',system-ui,sans-serif" }
+const FALLBACK = { orange: '#FF6A13', 'orange-text': '#C2410C', 'ink-fixed': '#1A1410', 'white-fixed': '#FFFFFF', surface: '#FFFFFF', 'surface-2': '#F5F3F0', text: '#1A1410', 'text-2': '#5E554F', 'text-3': '#736963', line: '#E7E1DB', 'control-border': '#8F857E', action: '#1A1410', 'on-action': '#FFFFFF', focus: '#1A1410', 'radius-m': '14px', 'radius-l': '24px', 'shadow-card': '0 1px 2px rgba(26,20,16,.06),0 10px 30px -14px rgba(26,20,16,.22)', 'heading-2': '30px', 'heading-3': '22px', 'text-lead': '20px', 'text-body': '17px', 'text-small': '15px', 'font-mono': "'Geist Mono',ui-monospace,monospace", 'font-display': "'Gabarito',system-ui,sans-serif", 'font-sans': "'Host Grotesk',system-ui,sans-serif" }
 const withFallbacks = h => h.replace(/var\(--([a-z0-9-]+)\)/g, (m, n) => FALLBACK[n] ? `var(--${n},${FALLBACK[n]})` : m)
 const doc = (marker, title, body, extraHead = '') => `${marker}\n<!doctype html>\n<html><head><meta charset="utf-8"><title>${title} - preview</title>${FONTS}${extraHead}</head>\n<body class="ew ew-preview">\n${withFallbacks(body)}\n</body></html>\n`
 
@@ -170,6 +170,116 @@ const bundleCss = `/* Ecomwerce components: classes shared by the previews and t
 @media (max-width:720px){.ew-hero,.ew-steps,.ew-honest{grid-template-columns:1fr}}
 `
 
+// the landing components (SiteHeader, SiteFooter, ConsentBanner, FinalCall, PageAnatomy), ProductCard's compact state
+// and build motion, the type classes; staged in tasks/landing/components and approved 2026-11-10. Fallbacks added below.
+const COMPACT = (s) => `${s}{display:grid;grid-template-columns:112px minmax(0,1fr);grid-template-rows:auto auto 1fr;gap:4px 14px;max-width:none}${s} .ew-card__window{grid-row:1/span 3;width:112px}${s} .ew-card__titlewrap{min-height:20px}${s} .ew-card__title{font-size:18px;line-height:1.15;margin:0}${s} .ew-card__buy{align-self:end;height:40px;font-size:14px}`
+const LANDING_CSS = withFallbacks(`/* focus: a 2px surface gap, then a solid 2px focus ring */
+.ew :where(a,button,summary,input):focus-visible{outline:none;box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--focus);border-radius:6px}
+/* type: the tokens as classes; display-xl and display-l scale between 720 and 1440px and keep the token sizes at both ends */
+.ew-display-xl{font:800 clamp(44px,4.4vw + 12px,72px)/.98 var(--font-display);letter-spacing:-.03em;margin:0;text-wrap:balance}
+.ew-display-l{font:800 clamp(36px,2.6vw + 16px,52px)/1.02 var(--font-display);letter-spacing:-.025em;margin:0;text-wrap:balance}
+.ew-heading-2{font:800 var(--heading-2)/1.15 var(--font-display);letter-spacing:-.02em;margin:0}
+.ew-heading-3{font:700 var(--heading-3)/1.25 var(--font-display);letter-spacing:-.01em;margin:0}
+.ew-lead{font-size:var(--text-lead);line-height:1.5;color:var(--text-2);margin:0;max-width:34em}
+.ew-small{font-size:var(--text-small);line-height:1.5;color:var(--text-2);margin:0}
+/* Button: a quiet text action beside a large button */
+.ew-textlink{font:600 16px/1 var(--font-sans);color:var(--text);text-decoration:underline;text-underline-offset:4px;padding:12px 4px}
+.ew-textlink:hover{color:var(--orange-text)}
+/* Logo and the App Store badge: one of two files by theme */
+.ew-dark-only{display:none!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ew-light-only{display:none!important}:root:not([data-theme="light"]) .ew-dark-only{display:block!important}}
+:root[data-theme="dark"] .ew-light-only{display:none!important}
+:root[data-theme="dark"] .ew-dark-only{display:block!important}
+/* ProductCard: the buy pill as a picture, the build motion, the compact state */
+.ew-card__buy:not(a):not(button){pointer-events:none;cursor:default}
+.ew-card__titlewrap{position:relative;min-height:24px}
+.ew-card__titlewrap .ew-card__line{position:absolute;left:0;top:6px;width:70%;opacity:0}
+.ew-card--build .ew-photo{animation:ew-fill .6s cubic-bezier(.2,.7,.2,1) .15s both}
+.ew-card--build .ew-card__line{animation:ew-line 1.1s linear both}
+.ew-card--build .ew-card__title{animation:ew-write .5s steps(18,end) .62s both}
+.ew-card--build .ew-card__price{animation:ew-in .3s ease-out 1.05s both}
+.ew-card--build .ew-card__buy{animation:ew-buy .35s ease-out 1.15s both}
+@keyframes ew-fill{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0)}}
+@keyframes ew-line{0%,55%{opacity:1}100%{opacity:0}}
+@keyframes ew-write{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0)}}
+@keyframes ew-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@keyframes ew-buy{from{opacity:.35}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.ew-card--build *{animation:none!important}}
+${COMPACT('.ew-card--compact')}
+@media (max-width:720px){${COMPACT('.ew-card--compact-sm')}}
+/* SiteHeader */
+.ew-header{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.ew-header__in{display:flex;align-items:center;justify-content:space-between;gap:16px;height:72px}
+.ew-header__logo{display:block;line-height:0;border-radius:6px}
+.ew-header__logo img,.ew-header__logo svg{display:block;height:32px;width:auto}
+.ew-header__nav{display:flex;align-items:center;gap:20px}
+.ew-header__link{font:500 15px/1 var(--font-sans);color:var(--text);text-decoration:none;padding:10px 4px}
+.ew-header__link:hover{color:var(--orange-text);text-decoration:underline;text-underline-offset:4px}
+/* FinalCall and the official badge */
+.ew-final{padding:64px 48px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:28px}
+.ew-final .ew-display-l{color:var(--ink-fixed);max-width:16em}
+.ew-final__actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:28px}
+.ew-final .ew-small{color:var(--ink-fixed)}
+.ew-final :focus-visible{box-shadow:0 0 0 2px var(--orange),0 0 0 4px var(--ink-fixed)}
+.ew-badge{display:inline-block;line-height:0;border-radius:6px}
+.ew-badge img{display:block;height:56px;width:auto}
+/* SiteFooter */
+.ew-footer{background:var(--surface-2);padding:48px 0 40px}
+.ew-footer__grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px;align-items:start}
+.ew-footer__brand{grid-column:span 5;display:flex;flex-direction:column;gap:12px}
+.ew-footer__brand img,.ew-footer__brand svg{height:28px;width:auto;align-self:flex-start}
+.ew-footer__links{grid-column:span 4;list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.ew-footer__links a,.ew-footer__links button{display:inline-block;font:500 15px/1.5 var(--font-sans);color:var(--text);text-decoration:none;background:none;border:0;padding:4px 0;cursor:pointer;text-align:left}
+.ew-footer__links a:hover,.ew-footer__links button:hover{text-decoration:underline;text-underline-offset:4px}
+.ew-footer__badge{grid-column:span 3;justify-self:end}
+.ew-footer__badge img{height:44px}
+.ew-footer__legal{grid-column:1/-1;border-top:1px solid var(--line);padding-top:20px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px}
+/* ConsentBanner */
+.ew-consent{position:fixed;z-index:40;left:24px;bottom:24px;width:420px;max-width:calc(100% - 32px);background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:var(--radius-l);box-shadow:var(--shadow-card);padding:20px;display:flex;flex-direction:column;gap:14px}
+.ew-consent[hidden],.ew-consent__part[hidden]{display:none}
+.ew-consent__part{display:flex;flex-direction:column;gap:14px}
+.ew-consent .ew-consent__title{font:600 17px/1.3 var(--font-sans);margin:0;color:var(--text)}
+.ew-consent p{margin:0;font-size:var(--text-small);line-height:1.5;color:var(--text-2)}
+.ew-consent__actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.ew-consent__actions .ew-btn{flex:1 1 0;min-width:130px}
+.ew-consent__more{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px}
+.ew-consent__more button,.ew-consent__more a{font:500 14px/1.4 var(--font-sans);color:var(--text);background:none;border:0;padding:6px 0;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.ew-consent__list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.ew-consent__list li{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:12px 0;border-bottom:1px solid var(--line)}
+.ew-consent__list strong{display:block;font:600 15px/1.4 var(--font-sans)}
+.ew-consent__list span{display:block;font-size:14px;line-height:1.45;color:var(--text-2)}
+.ew-consent__list .ew-consent__note{font-size:13px;color:var(--text-3);margin-top:4px}
+.ew-switch{appearance:none;-webkit-appearance:none;flex:none;width:44px;height:26px;border-radius:999px;background:var(--surface-2);box-shadow:inset 0 0 0 1.5px var(--control-border);position:relative;cursor:pointer;margin:2px 0 0}
+.ew-switch::after{content:"";position:absolute;top:4px;left:4px;width:18px;height:18px;border-radius:999px;background:var(--control-border);transition:transform .15s}
+.ew-switch:checked{background:var(--action);box-shadow:none}
+.ew-switch:checked::after{transform:translateX(18px);background:var(--on-action)}
+.ew-switch:disabled{opacity:.55;cursor:not-allowed}
+@media (prefers-reduced-motion:reduce){.ew-switch::after{transition:none}}
+/* PageAnatomy: a real page with labels on its parts; ew-ph is a layout placeholder, never for a published page */
+.ew-anatomy{position:relative;margin:0;border:1px solid var(--line);border-radius:var(--radius-m);background:var(--surface-2);padding:24px}
+.ew-anatomy__shot{display:grid;gap:12px;background:var(--surface);border-radius:10px;padding:16px;min-height:420px}
+.ew-ph{border-radius:8px;background:repeating-linear-gradient(135deg,var(--line) 0 2px,transparent 2px 10px);display:flex;align-items:center;justify-content:center;font:500 12px/1.4 var(--font-mono);color:var(--text-3);text-align:center;padding:8px}
+.ew-legend{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.ew-legend li{display:flex;gap:12px;align-items:baseline}
+.ew-legend b{flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:999px;background:var(--text);color:var(--surface);font:500 12px/1 var(--font-mono)}
+/* PricingCard: the billing notes beside the card */
+.ew-bill{list-style:none;margin:24px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.ew-bill li{display:flex;gap:10px;align-items:flex-start;color:var(--text-2);font-size:var(--text-small);line-height:1.5}
+.ew-bill li::before{content:"";flex:none;width:6px;height:6px;border-radius:999px;background:var(--text-3);margin-top:9px}
+/* Steps: titles in heading-3, text in text-body */
+.ew-step .ew-h{font-size:var(--heading-3);line-height:1.25}
+.ew-step .ew-p{font-size:var(--text-body);line-height:1.6}
+@media (max-width:720px){
+.ew-display-xl{line-height:1}
+.ew-header__in{height:56px}.ew-header__logo img,.ew-header__logo svg{height:28px}.ew-header__nav{gap:12px}
+.ew-final{padding:40px 20px;gap:22px}.ew-badge img{height:48px}
+.ew-footer__grid{grid-template-columns:1fr}.ew-footer__grid>*{grid-column:auto}.ew-footer__badge{justify-self:start}
+.ew-consent{left:0;right:0;bottom:0;width:auto;max-width:none;border-radius:var(--radius-l) var(--radius-l) 0 0;border-width:1px 0 0;padding:18px 16px 20px}
+.ew-anatomy__shot{min-height:360px}
+}
+@media (max-width:360px){.ew-header__link{display:none}}
+`)
+
 const card = ({ title = 'Ceramic pour-over set', price = '$34.00', buy = 'Add to cart', building = false } = {}) => `<div class="ew-card">
   <div class="ew-card__window${building ? ' ew-skel' : ''}">${building ? '' : PHOTO}</div>
   ${building ? '<div class="ew-card__line ew-skel"></div><div class="ew-card__line ew-skel" style="width:35%"></div>' : `<p class="ew-card__title">${title}</p><span class="ew-card__price">${price}</span>`}
@@ -177,6 +287,18 @@ const card = ({ title = 'Ceramic pour-over set', price = '$34.00', buy = 'Add to
 </div>`
 
 const PRICE_LINE = 'Free to install. Your first 2 product pages are free, then $3 per product page.'
+// the official "Find it on the Shopify App Store" badges, unaltered (brand/shopify/README.md): black for light grounds, white for dark
+const BADGE = 'data:image/svg+xml;base64,' + (await readFile(ROOT + 'shopify/badge-shopify-app-store-dark.svg')).toString('base64')
+const BADGE_WHITE = 'data:image/svg+xml;base64,' + (await readFile(ROOT + 'shopify/badge-shopify-app-store-light.svg')).toString('base64')
+// both lockups at a tile height; the theme shows one (ew-light-only, ew-dark-only)
+const lockups = (h) => ['ecomwerce-lockup.svg', 'ecomwerce-lockup-white.svg'].map((f, i) => files[f].replace('<svg ', `<svg class="${i ? 'ew-dark-only' : 'ew-light-only'}" width="${Math.round(h * lkW / 1200)}" height="${h}" style="height:${h}px" role="img" aria-label="Ecomwerce" `)).join('')
+const headerIn = (h) => `<a class="ew-header__logo" href="#">${lockups(h)}</a><nav class="ew-header__nav"><a class="ew-header__link" href="#">Pricing</a><a class="ew-btn ew-btn--sm" href="#">Install free</a></nav>`
+const compactCard = ({ building = false } = {}) => `<div class="ew-stage" style="padding:16px;width:358px;max-width:100%"><div class="ew-card ew-card--compact">
+  <div class="ew-card__window${building ? ' ew-skel' : ''}">${building ? '' : PHOTO}</div>
+  ${building ? '<div class="ew-card__line ew-skel"></div><div class="ew-card__line ew-skel" style="width:35%"></div>' : '<p class="ew-card__title">Ceramic pour-over set</p><span class="ew-card__price">$34.00</span>'}
+  <span class="ew-btn ew-btn--on-orange ew-btn--block ew-card__buy"${building ? ' style="opacity:.35"' : ''}>Add to cart</span>
+</div></div>`
+const SWITCH = (label, on, disabled) => `<input class="ew-switch" type="checkbox" role="switch"${on ? ' checked' : ''}${disabled ? ' disabled' : ''} aria-label="${label}">`
 const previews = {
   Logo: doc('<!-- @dsCard group="Brand" height=420 subtitle="The product card mark, the wordmark and the lockups" -->', 'Logo', `<div class="ew-col" style="gap:22px">
   <div class="ew-row" style="gap:28px;align-items:flex-end">${[120, 64, 40, 28].map(s => tileAt(ICON, s)).join('')}${tileAt(SMALL, 20)}${tileAt(SMALL, 16)}</div>
@@ -201,32 +323,35 @@ const previews = {
   <div class="ew-row"><a class="ew-btn ew-btn--lg" href="#">Install free</a><a class="ew-btn" href="#">Install free</a><a class="ew-btn ew-btn--sm" href="#">Install free</a><a class="ew-btn ew-btn--secondary" href="#">See a sample page</a><a class="ew-link" href="#">How pricing works</a></div>
   <div class="ew-stage ew-row" style="padding:20px"><a class="ew-btn ew-btn--on-orange" href="#">Install free</a><a class="ew-btn ew-btn--on-orange ew-btn--sm" href="#">Add to cart</a><span style="font-size:14px;color:var(--ink-fixed)">On orange, buttons are always ink.</span></div>
 </div>`),
-  ProductCard: doc('<!-- @dsCard group="Brand" height=470 subtitle="The mark grown into a page: photo window, title, price, buy button on the orange stage" -->', 'Product card', `<div class="ew-row" style="gap:20px;align-items:stretch">
+  ProductCard: doc('<!-- @dsCard group="Brand" height=690 subtitle="The mark grown into a page: photo window, title, price, buy button on the orange stage; compact on phones" -->', 'Product card', `<div class="ew-row" style="gap:20px;align-items:stretch">
   <div class="ew-stage" style="padding:32px;width:340px;max-width:100%">${card()}</div>
   <div class="ew-stage" style="padding:32px;width:340px;max-width:100%">${card({ building: true })}</div>
   <div class="ew-col" style="max-width:260px;justify-content:center"><span class="ew-eyebrow">States</span><p class="ew-p">Finished page, and the build moment: the window and lines fill in, then the button appears. With reduced motion, show the finished card.</p></div>
+</div>
+<div class="ew-row" style="gap:20px;align-items:stretch;margin-top:20px">${compactCard()}${compactCard({ building: true })}
+  <div class="ew-col" style="max-width:260px;justify-content:center"><span class="ew-eyebrow">Compact</span><p class="ew-p">On phones the hero card lies on its side, so the first screen holds the headline, the card and the Install button.</p></div>
 </div>`),
   Hero: doc('<!-- @dsCard group="Landing" height=560 width=1200 subtitle="The landing first screen: promise, price sentence, one action, the product card" -->', 'Hero', `<section class="ew-hero" style="max-width:1160px;margin:0 auto;padding:24px 0">
   <div class="ew-hero__text">
     <span class="ew-eyebrow">Shopify app for product testers</span>
     <h1 class="ew-h" style="font-size:68px;line-height:.98">A product page for every product you test.</h1>
-    <p class="ew-p" style="font-size:20px;line-height:1.5">Pick a product from your catalog. Ecomwerce writes the page in your own theme, you preview it and decide when it goes live.</p>
+    <p class="ew-p" style="font-size:20px;line-height:1.5">Pick a product from your catalog. Ecomwerce writes its page on your store, you preview it and decide when it goes live.</p>
     <div class="ew-row"><a class="ew-btn ew-btn--lg" href="#">Install free</a><a class="ew-btn ew-btn--secondary ew-btn--lg" href="#">See a sample page</a></div>
     <p class="ew-note">${PRICE_LINE}</p>
   </div>
   <div class="ew-stage ew-hero__stage">${card()}</div>
 </section>`),
   Steps: doc('<!-- @dsCard group="Landing" height=260 width=1100 subtitle="How it works: three real steps, so the numbers mean order" -->', 'Steps', `<ol class="ew-steps">
-  <li class="ew-step"><span class="ew-step__n">01</span><h3 class="ew-h" style="font-size:24px">Pick a product</h3><p class="ew-p">Choose a product from your Shopify catalog. Its photos and details are the starting point.</p></li>
-  <li class="ew-step"><span class="ew-step__n">02</span><h3 class="ew-h" style="font-size:24px">Ecomwerce writes the page</h3><p class="ew-p">Headline, benefits, FAQ and sections, in your own theme. About two minutes per page.<sup>1</sup></p></li>
-  <li class="ew-step"><span class="ew-step__n">03</span><h3 class="ew-h" style="font-size:24px">Preview, then go live</h3><p class="ew-p">See the page on your store first. It goes live only when you press Go live.</p></li>
+  <li class="ew-step"><span class="ew-step__n">01</span><h3 class="ew-h">Pick a product</h3><p class="ew-p">Choose a product from your Shopify catalog. Its photos and details are the starting point.</p></li>
+  <li class="ew-step"><span class="ew-step__n">02</span><h3 class="ew-h">Ecomwerce writes the page</h3><p class="ew-p">A headline, benefits, reasons it stands out and an FAQ, in a new theme on your store. About two minutes for one product.<sup>1</sup></p></li>
+  <li class="ew-step"><span class="ew-step__n">03</span><h3 class="ew-h">Preview, then go live</h3><p class="ew-p">See the page on your store first. It goes live only when you press Go live.</p></li>
 </ol>
-<p class="ew-note" style="margin-top:18px">1. Product page builds on our test store, October 2026: 3 of 4 finished within 1 min 57 s.</p>`),
+<p class="ew-note" style="margin-top:18px">1. One product, product page only: 4 of 5 builds on our test store finished within 1 min 57 s (October 2026).</p>`),
   HonestyList: doc('<!-- @dsCard group="Landing" height=330 width=1000 subtitle="Real data only: what Ecomwerce never adds, and what stays yours" -->', 'Honesty list', `<div class="ew-honest">
   <div class="ew-honest__col ew-never"><h3 class="ew-h" style="font-size:24px">Never added by Ecomwerce</h3><ul>
     <li>${luc('x')}Invented reviews or star ratings</li><li>${luc('x')}Review counts and "people bought this" lines</li><li>${luc('x')}Stock bars and countdown timers</li><li>${luc('x')}"Verified" badges</li></ul></div>
   <div class="ew-honest__col ew-always"><h3 class="ew-h" style="font-size:24px">Always yours</h3><ul>
-    <li>${luc('check')}Your photos and product data</li><li>${luc('check')}Your real reviews, when you add them</li><li>${luc('check')}Your theme, and your click to go live</li></ul></div>
+    <li>${luc('check')}Your photos and product data</li><li>${luc('check')}Your real reviews, when you add them</li><li>${luc('check')}Your theme library, and your click to go live</li></ul></div>
 </div>`),
   PricingCard: doc('<!-- @dsCard group="Landing" height=420 subtitle="Pay as you go: the same price sentence as the listing and the app" -->', 'Pricing card', `<div class="ew-price">
   <span class="ew-eyebrow">Pricing</span>
@@ -241,9 +366,26 @@ const previews = {
   <details><summary>What does it cost?</summary><p>${PRICE_LINE} The monthly cap is $60.</p></details>
   <details><summary>Which languages does it write in?</summary><p>English for now.</p></details>
 </div>`),
+  SiteHeader: doc('<!-- @dsCard group="Landing" height=230 width=1100 subtitle="The landing header: lockup, Pricing, one small Install button; sticky" -->', 'Site header', `<p class="ew-eyebrow" style="margin:0 0 8px">Desktop, 72px</p>
+<header class="ew-header" style="position:static"><div class="ew-header__in" style="padding:0 24px">${headerIn(32)}</div></header>
+<p class="ew-eyebrow" style="margin:24px 0 8px">Phone, 56px</p>
+<div style="width:390px;max-width:100%;border:1px solid var(--line)"><header class="ew-header" style="position:static"><div class="ew-header__in" style="height:56px;padding:0 16px">${headerIn(28)}</div></header></div>`),
+  SiteFooter: doc('<!-- @dsCard group="Landing" height=290 width=1100 subtitle="Who makes Ecomwerce, the contact, the legal links and the official badge" -->', 'Site footer', `<footer class="ew-footer"><div class="ew-footer__grid" style="padding:0 24px">
+<div class="ew-footer__brand">${lockups(28)}<p class="ew-small">Made by SpurIT</p><p class="ew-small">Support: [support email]</p></div>
+<ul class="ew-footer__links" aria-label="Legal"><li><a href="#">Privacy policy</a></li><li><a href="#">Terms</a></li><li><a href="#">Cookies</a></li><li><a href="#">Legal notice</a></li><li><button type="button">Privacy choices</button></li></ul>
+<div class="ew-footer__badge"><a class="ew-badge" href="#"><img class="ew-light-only" src="${BADGE}" width="166" height="44" alt="Find it on the Shopify App Store"><img class="ew-dark-only" src="${BADGE_WHITE}" width="166" height="44" alt="Find it on the Shopify App Store"></a></div>
+<div class="ew-footer__legal"><p class="ew-note">Shopify is a trademark of Shopify Inc.</p><p class="ew-note">&copy; 2026 SpurIT</p></div>
+</div></footer>`),
+  ConsentBanner: doc('<!-- @dsCard group="Landing" height=470 width=1000 subtitle="Asks before any tag loads (EEA, UK, Switzerland); reject as easy as accept" -->', 'Consent banner', `<div class="ew-row" style="align-items:flex-start;gap:24px">
+<div><p class="ew-eyebrow" style="margin:0 0 8px">Summary</p><div class="ew-consent" style="position:static" role="dialog" aria-modal="false" aria-labelledby="c1"><div class="ew-consent__part"><p class="ew-consent__title" id="c1">Cookies for measuring our ads</p><p>We use cookies to count visits and see which ads bring people here (Google, Meta and TikTok). They stay off unless you allow them.</p><div class="ew-consent__actions"><button type="button" class="ew-btn ew-btn--secondary">Reject all</button><button type="button" class="ew-btn ew-btn--secondary">Accept all</button></div><div class="ew-consent__more"><button type="button">Choose</button><a href="#">Cookie policy</a></div></div></div></div>
+<div><p class="ew-eyebrow" style="margin:0 0 8px">Settings, Global Privacy Control on</p><div class="ew-consent" style="position:static" role="dialog" aria-modal="false" aria-labelledby="c2"><div class="ew-consent__part"><p class="ew-consent__title" id="c2">Choose cookies</p><ul class="ew-consent__list"><li><div><strong>Necessary</strong><span>Keeps the page working and remembers your choice. Always on.</span></div>${SWITCH('Necessary cookies, always on', true, true)}</li><li><div><strong>Measurement</strong><span>Google Analytics counts visits and which page versions people use.</span></div>${SWITCH('Measurement cookies')}</li><li><div><strong>Advertising</strong><span>Meta, TikTok and Google Ads measure our ads and show them to people like you.</span><span class="ew-consent__note">Off, because your browser sends a Global Privacy Control signal.</span></div>${SWITCH('Advertising cookies', false, true)}</li></ul><div class="ew-consent__actions"><button type="button" class="ew-btn ew-btn--secondary">Save choices</button><button type="button" class="ew-btn ew-btn--secondary">Accept all</button></div><div class="ew-consent__more"><a href="#">Cookie policy</a></div></div></div></div>
+</div>`),
+  FinalCall: doc('<!-- @dsCard group="Landing" height=400 width=1100 subtitle="The promise again on orange, one Install button, the official badge" -->', 'Final call', `<div class="ew-stage ew-final"><h2 class="ew-display-l">A product page for every product you test.</h2><div class="ew-final__actions"><a class="ew-btn ew-btn--on-orange ew-btn--lg" href="#">Install free</a><a class="ew-badge" href="#"><img src="${BADGE}" width="211" height="56" alt="Find it on the Shopify App Store"></a></div><p class="ew-small">${PRICE_LINE} Monthly cap of $60.</p></div>`),
+  PageAnatomy: doc('<!-- @dsCard group="Landing" height=540 width=1100 subtitle="A real product page Ecomwerce built, with numbered labels on its parts" -->', 'Page anatomy', `<div style="display:grid;grid-template-columns:5fr 7fr;gap:24px;align-items:start"><ol class="ew-legend"><li><b>1</b><span>Headline and photos</span></li><li><b>2</b><span>Your price, variants and Add to cart, from the theme</span></li><li><b>3</b><span>Benefits</span></li><li><b>4</b><span>Why it stands out</span></li><li><b>5</b><span>FAQ</span></li></ol>
+<figure class="ew-anatomy"><div class="ew-anatomy__shot" aria-hidden="true"><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="ew-ph" style="aspect-ratio:1">placeholder · the real screenshot replaces it</div><div style="display:grid;gap:10px;align-content:start"><div class="ew-ph" style="height:56px">1 headline</div><div class="ew-ph" style="height:96px">2 price, variants, Add to cart</div></div></div><div class="ew-ph" style="height:72px">3 benefits</div><div class="ew-ph" style="height:72px">4 why it stands out</div><div class="ew-ph" style="height:60px">5 faq</div></div><figcaption class="ew-note" style="margin-top:12px">[Product] on our development store, built [date].</figcaption></figure></div>`),
   ListingImage: doc('<!-- @dsCard group="Listing" height=470 width=1200 subtitle="App Store feature image and screenshot frame, 1600 x 900, drawn at 0.36" -->', 'Listing image', `<div class="ew-frames">
   <div style="width:576px;height:324px"><div class="ew-frame" style="width:1600px;height:900px;transform:scale(.36);background:var(--orange);display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:0 110px;gap:60px;color:var(--ink-fixed)">
-    <div style="display:flex;flex-direction:column;gap:28px"><span style="font:500 28px var(--font-mono);letter-spacing:.06em;text-transform:uppercase">Ecomwerce</span><h2 class="ew-h" style="font-size:96px;line-height:.98">Your product, as a page in your theme</h2></div>
+    <div style="display:flex;flex-direction:column;gap:28px"><span style="font:500 28px var(--font-mono);letter-spacing:.06em;text-transform:uppercase">Ecomwerce</span><h2 class="ew-h" style="font-size:96px;line-height:.98">Your product, as a page on your store</h2></div>
     <div style="justify-self:center;width:420px;height:760px;border-radius:56px;background:#1A1410;padding:18px;box-shadow:0 30px 60px -30px rgba(0,0,0,.5)"><div style="background:#fff;border-radius:40px;height:100%;overflow:hidden;display:flex;flex-direction:column"><div style="aspect-ratio:1">${PHOTO}</div><div style="padding:26px;display:flex;flex-direction:column;gap:14px"><b style="font:800 34px/1.1 var(--font-display);color:#1A1410">Ceramic pour-over set</b><span style="font:500 24px var(--font-mono);color:#1A1410">$34.00</span><span style="height:14px;border-radius:9px;background:#EDE7E1"></span><span style="height:14px;width:70%;border-radius:9px;background:#EDE7E1"></span><span style="margin-top:8px;height:72px;border-radius:999px;background:#1A1410;color:#fff;display:grid;place-items:center;font:600 26px var(--font-sans)">Add to cart</span></div></div></div>
   </div></div>
   <div style="width:576px;height:324px"><div class="ew-frame" style="width:1600px;height:900px;transform:scale(.36);background:var(--surface-2);padding:90px 110px;display:flex;flex-direction:column;gap:48px">
@@ -299,7 +441,7 @@ svg{position:absolute;inset:0}
 `
 
 await mkdir(DS + 'components', { recursive: true })
-await writeFile(DS + 'components/bundle.css', bundleCss)
+await writeFile(DS + 'components/bundle.css', bundleCss + LANDING_CSS)
 for (const [n, html] of Object.entries(previews)) { await mkdir(DS + `components/${n}`, { recursive: true }); await writeFile(DS + `components/${n}/preview.html`, html) }
 await mkdir(DS + 'components/Cover', { recursive: true }); await writeFile(DS + 'components/Cover/preview.html', cover)
 console.log('logo files:', Object.keys(files).length + pngs.length, '| previews:', Object.keys(previews).length + 1, '| lockup viewBox width', lkW)
