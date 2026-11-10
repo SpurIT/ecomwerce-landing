@@ -1,0 +1,154 @@
+{
+  "v": 3,
+  "layout": "files",
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-11-10T12:10:13Z"
+  },
+  "title": "Ecomwerce",
+  "namespace": "Ecomwerce",
+  "libraries": [],
+  "sections": {},
+  "groups": [
+    "Logos"
+  ],
+  "assetGroups": {
+    "Logos": {
+      "name": "Logos",
+      "tile": "l",
+      "order": [
+        "ecomwerce-icon.svg",
+        "ecomwerce-icon-1200.png",
+        "ecomwerce-icon-512.png",
+        "ecomwerce-icon-192.png",
+        "ecomwerce-icon-180.png",
+        "ecomwerce-favicon.svg",
+        "ecomwerce-favicon-32.png",
+        "ecomwerce-favicon-16.png",
+        "ecomwerce-icon-mono.svg",
+        "ecomwerce-icon-construction.svg",
+        "ecomwerce-lockup.svg",
+        "ecomwerce-lockup.png",
+        "ecomwerce-lockup-white.svg",
+        "ecomwerce-lockup-on-orange.svg",
+        "ecomwerce-mark-on-orange.svg",
+        "ecomwerce-wordmark.svg",
+        "ecomwerce-wordmark-white.svg"
+      ],
+      "files": {
+        "ecomwerce-icon.svg": {
+          "name": "ecomwerce-icon.svg",
+          "blob": "c60782e352f7816c96037d3a867d5b60",
+          "size": 343,
+          "type": "image/svg+xml"
+        },
+        "ecomwerce-icon-1200.png": {
+          "name": "ecomwerce-icon-1200.png",
+          "blob": "e81ede0680d8158bcb52ea57253d1e63",
+          "size": 13190,
+          "type": "image/png"
+        },
+        "ecomwerce-icon-512.png": {
+          "name": "ecomwerce-icon-512.png",
+          "blob": "2c0831d0a5090459b7a4db5a4d5cf08a",
+          "size": 4690,
+          "type": "image/png"
+        },
+        "ecomwerce-icon-192.png": {
+          "name": "ecomwerce-icon-192.png",
+          "blob": "1f94377f282b4628da4bd5298e588ab5",
+          "size": 1522,
+          "type": "image/png"
+        },
+        "ecomwerce-icon-180.png": {
+          "name": "ecomwerce-icon-180.png",
+          "blob": "36251841ce9c5765cde0407a847eb3e6",
+          "size": 1523,
+          "type": "image/png"
+        },
+        "ecomwerce-favicon.svg": {
+          "name": "ecomwerce-favicon.svg",
+          "blob": "8fb6c0fbf257589dab751fed630b35bd",
+          "size": 271,
+          "type": "image/svg+xml"
+        },
+        "ecomwerce-favicon-32.png": {
+          "name": "ecomwerce-favicon-32.png",
+          "blob": "3fde12ed9ab34d6fda2d08fb100a9d14",
+          "size": 525,
+          "type": "image/png"
+        },
+        "ecomwerce-favicon-16.png": {
+          "name": "ecomwerce-favicon-16.png",
+          "blob": "147c79550ae1f90cc7e9a1ab69d97b10",
+          "size": 321,
+          "type": "image/png"
+        },
+        "ecomwerce-icon-mono.svg": {
+          "name": "ecomwerce-icon-mono.svg",
+          "blob": "bb42b96f3b2eb4509301119d1ae8e66b",
+          "size": 343,
+          "type": "image/svg+xml"
+        },
+        "ecomwerce-icon-construction.svg": {
+          "name": "ecomwerce-icon-construction.svg",
+          "blob": "8c5cc8d3118c303698c7e7f994d8bb90",
+          "size": 2402,
+          "type": "image/svg+xml"
+        },
+        "ecomwerce-lockup.svg": {
+          "name": "ecomwerce-lockup.svg",
+          "blob": "4239f8f9cb63c72b98cde271b4366669",
+          "size": 4347,
+          "type": "image/svg+xml"
+        },
+        "ecomwerce-lockup.png": {
+          "name": "ecomwerce-lockup.png",
+          "blob": "40325cd2ffd9e4c3cc7e9e6d7a37837d",
+          "size": 18365,
+          "type": "image/png"
+        },
+        "ecomwerce-lockup-white.svg": {
+          "name": "ecomwerce-lockup-white.svg",
+          "blob": "5b49db17cb8976ecd6a5cb58f501a82a",
+          "size": 4347,
+          "type": "image/svg+xml"
+        },
+        "ecomwerce-lockup-on-orange.svg": {
+          "name": "ecomwerce-lockup-on-orange.svg",
+          "blob": "6b4cb779904391e9309814aa61b48668",
+          "size": 4326,
+          "type": "image/svg+xml"
+        },
+        "ecomwerce-mark-on-orange.svg": {
+          "name": "ecomwerce-mark-on-orange.svg",
+          "blob": "3b53649eb86d7f9f3806acecae3efa1b",
+          "size": 289,
+          "type": "image/svg+xml"
+        },
+        "ecomwerce-wordmark.svg": {
+          "name": "ecomwerce-wordmark.svg",
+          "blob": "b4062b03496a49c03c01137a36cb54e7",
+          "size": 4023,
+          "type": "image/svg+xml"
+        },
+        "ecomwerce-wordmark-white.svg": {
+          "name": "ecomwerce-wordmark-white.svg",
+          "blob": "8ed3067d054e67680bd895c52f656dfc",
+          "size": 4023,
+          "type": "image/svg+xml"
+        }
+      }
+    }
+  },
+  "blobs": {},
+  "docs": {
+    "sections": []
+  },
+  "lastChange": {
+    "by": "Anton Zialionka",
+    "at": "2026-11-10T12:10:13Z",
+    "via": "Claude Code",
+    "note": "First version: product card mark, wordmark, tokens, brand book, listing, landing and ad templates"
+  }
+}
