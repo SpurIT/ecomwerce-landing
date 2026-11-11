@@ -49,6 +49,13 @@ a{color:inherit}
 .lp-footnote{margin-top:24px}
 .lp-anatomy__img{display:block;width:100%;height:auto;border-radius:10px}
 .lp-pricing .ew-price{max-width:none}
+/* pricing (phase 3): the head over two columns, what testing costs (CostChart) in 7, the card and how billing works
+   in 5; on tablets the chart spans the row and the card sits beside the notes (5 columns there would wrap the card) */
+@media (min-width:721px) and (max-width:900px){
+  .lp-pricing__cols>.lp-span-7{grid-column:1/-1}
+  .lp-pricing__plan{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:24px;align-items:start}
+  .lp-pricing__plan .ew-bill{margin-top:0}
+}
 .lp-faq .ew-faq{max-width:none}
 .ew-footer{margin-top:var(--space-24)}
 

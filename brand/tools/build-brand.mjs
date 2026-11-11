@@ -300,11 +300,12 @@ const compactCard = ({ building = false } = {}) => `<div class="ew-stage" style=
 </div></div>`
 const SWITCH = (label, on, disabled) => `<input class="ew-switch" type="checkbox" role="switch"${on ? ' checked' : ''}${disabled ? ' disabled' : ''} aria-label="${label}">`
 // phase 3 (2026-11-11, operator): Steps' pictured state with three drawn scenes, CostChart and ScopeList (tasks/landing/
-// BRIEF-phase-3.md). A scene is drawn at a nominal 360 x 270 and scales with its width (container units: 1cqi is 3.6px
-// there); its colours are fixed, like the product card's, so it reads the same in both themes. Grey lines stand for
-// text: a scene is a schematic, never a screenshot, and shows nothing the launch app does not do (no time, review,
-// star or stock bar).
-const u = (px) => `${+(px / 3.6).toFixed(3)}cqi`
+// BRIEF-phase-3.md). A scene is drawn at a nominal 360 x 270 and scales with its width: every size inside it is
+// calc(var(--u) * n), with --u at 1cqi (3.6px at the nominal width) and at 3.6px where container units are unknown
+// (Safari before 16, so iPhone in-app browsers there still draw the scene at its nominal size). Its colours are fixed,
+// like the product card's, so it reads the same in both themes. Grey lines stand for text: a scene is a schematic,
+// never a screenshot, and shows nothing the launch app does not do (no time, review, star or stock bar).
+const u = (px) => `calc(var(--u) * ${+(px / 3.6).toFixed(3)})`
 const FX = { ink: '#1A1410', white: '#FFFFFF', muted: '#5E554F', faint: '#736963', line: '#E9E2DB', tint: '#FFEADB', photo: '#F3EEE8', box: '#8F857E' }
 const PHASE3_CSS = withFallbacks(`/* Steps, pictured: a drawn scene above each step's text */
 .ew-steps--pictured{row-gap:48px}
@@ -313,7 +314,8 @@ const PHASE3_CSS = withFallbacks(`/* Steps, pictured: a drawn scene above each s
 .ew-step__text{display:flex;flex-direction:column;gap:10px;padding-top:16px;border-top:2px solid var(--text)}
 @media (min-width:721px) and (max-width:1099px){.ew-steps--pictured{grid-template-columns:1fr;row-gap:40px}.ew-steps--pictured .ew-step{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:32px;align-items:center}}
 /* the scenes: the orange stage at 4:3, white panels with fixed colours */
-.ew-scene{position:relative;display:block;aspect-ratio:4/3;container-type:inline-size;overflow:hidden;border-radius:var(--radius-l);background:var(--orange);color:${FX.ink}}
+.ew-scene{--u:1cqi;position:relative;display:block;aspect-ratio:4/3;container-type:inline-size;overflow:hidden;border-radius:var(--radius-l);background:var(--orange);color:${FX.ink}}
+@supports not (width:1cqi){.ew-scene{--u:3.6px}}
 :where(.ew-scene) span{display:block}
 .ew-scene__panel{position:absolute;background:${FX.white};border-radius:${u(14)};box-shadow:var(--shadow-card)}
 .ew-scene__label{font:500 ${u(11)}/1.3 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:${FX.faint};white-space:nowrap}

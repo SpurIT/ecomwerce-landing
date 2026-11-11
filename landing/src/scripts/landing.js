@@ -1,4 +1,4 @@
-// The page's one script (budget: under 50 KB before the ad tags). It does five things:
+// The page's one script (budget: under 50 KB before the ad tags). It does six things:
 // 1. consent: the banner in the opt-in copy until a choice, the settings, "Privacy choices", a first-party cookie,
 //    and Global Privacy Control as a no to advertising (TASK.md q4);
 // 2. the tag loader: the Google tag (GA4, Google Ads) with Consent Mode v2 signals, the Meta Pixel and the TikTok Pixel,
@@ -6,8 +6,10 @@
 // 3. the events: a page view, and on every Install click InstallClick (Meta, TikTok), install_click (GA4) and the
 //    Google Ads conversion, with variant, placement, utm_source and in_app; the navigation waits 300 ms at most;
 // 4. the visit's utm parameters on every Install link (the html carries the landing's defaults);
-// 5. in the Instagram, Facebook and TikTok browsers only: the hint under the hero button and "Copy link".
-// The build motion is css (bundle.css, ew-card--build). The config comes from <script id="ew-config"> (Base.astro).
+// 5. in the Instagram, Facebook and TikTok browsers only: the hint under the hero button and "Copy link";
+// 6. How it works, step 2: its scene builds once when it comes into view (phase 3).
+// The build motions are css (bundle.css, ew-card--build and ew-scene--build). The config comes from
+// <script id="ew-config"> (Base.astro).
 const config = JSON.parse(document.getElementById('ew-config')?.textContent || '{}');
 const optinCopy = config.geo !== 'optout';
 const params = new URLSearchParams(location.search);
@@ -198,4 +200,23 @@ if (hint && inApp !== 'none') {
       input.select();
     }
   });
+}
+
+// ---------- 6. How it works, step 2: the build plays once when its scene comes into view ----------
+// The scene ships finished (data-build, no ew-scene--build in the html), so without this script, with reduced motion or
+// without IntersectionObserver nothing moves. A scene below the viewport is armed (paused on its first frame) until
+// 40 % of it shows; one in view or above it plays at once. Once played, it stays finished: no replay on scrolling back.
+if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  for (const scene of document.querySelectorAll('[data-build]')) {
+    const below = scene.getBoundingClientRect().top >= innerHeight;
+    scene.classList.add('ew-scene--build');
+    if (!below) continue;
+    scene.classList.add('ew-scene--armed');
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.intersectionRatio >= 0.4)) return;
+      scene.classList.remove('ew-scene--armed');
+      io.disconnect();
+    }, { threshold: 0.4 });
+    io.observe(scene);
+  }
 }

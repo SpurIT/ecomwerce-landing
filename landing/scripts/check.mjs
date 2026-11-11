@@ -1,14 +1,21 @@
 #!/usr/bin/env node
 // The checks of the built site (TASK.md phase 2, VERIFY). Run after npm run build:
-//   npm run check [-- --no-lighthouse] [--only shots|clicks|tags|audit|lighthouse]
+//   npm run check [-- --no-lighthouse] [--only shots|blocks|clicks|tags|audit|lighthouse]
 // 1. extra builds into .check/: gates g1, g2, g4 open; g3 open without its real build (must fail); fake tag ids
-// 2. the html audit over dist/: gated words, the price sentence, voice, robots and canonical, rating markup, fonts
+// 2. the html audit over dist/: gated words, the price sentence, every dollar amount, the order of the sections, voice,
+//    robots and canonical, rating markup, fonts
 // 3. screenshots into .check/shots/ with console errors and horizontal scroll: each variant and its opt-in copy at
-//    1440 and 390, first screens at 390 x 844, no javascript, reduced motion, dark, in-app browsers, legal, 404, 768
+//    1440 and 390, first screens at 390 x 844 (where phase 2 left them), no javascript, reduced motion, dark, in-app
+//    browsers, legal, 404, 768
+// 3b. phase 3 (blocks): per-section frames of how it works, the scope block and pricing (.check/shots/p3-*.jpg), the
+//    bars to scale, step 2's build (finished without the script and with reduced motion; armed below the fold, once in
+//    view, no replay), the orange share of the page, the stacking with g2, and how it works in WebKit
 // 4. real clicks: Install links and utm, consent flows, "Privacy choices", Global Privacy Control, the faq, the keyboard
 // 5. the tags with fake ids: nothing before consent in the opt-in copy, each tag after its consent, the Install events
 // 6. Lighthouse mobile (13.5.0) on each variant
-// Exits 1 on a failure; the summary goes to .check/report.json. playwright comes from the repo root.
+// Exits 1 on a failure; the summary goes to .check/report.json. playwright comes from the repo root; WebKit from
+// EW_PLAYWRIGHT_WEBKIT when set (a playwright module path: on macOS 14, playwright 1.64 cannot drive its WebKit,
+// landing/README.md).
 import { chromium } from 'playwright';
 import { spawn, spawnSync } from 'node:child_process';
 import { createServer } from 'node:http';
@@ -39,10 +46,17 @@ const GATED = {
 };
 const TAG_HOSTS = /googletagmanager\.com|connect\.facebook\.net|analytics\.tiktok\.com/;
 const listing = new URL(LISTING_URL);
+// every dollar amount the page may show: the price and the chart (BL-1), the ad test's sourced figures, the placeholder
+// product's price (TASK.md phase 3 RESEARCH)
+const DOLLARS = new Set(['$3', '$9', '$36', '$60', '$150', '$250', '$50', '$34.00']);
+// the order of the sections below the hero (3-landing-page.md); a closed gate's section is absent
+const ORDER = ['how', 'sample', 'honest', 'scope', 'pricing', 'faq'];
+// the card's top and bottom at 390 x 844 where phase 2 left them (TASK.md phase 2 VERIFY): phase 3 adds nothing above it
+const FOLD_P2 = { default: '545-689', first: '616-760', builder: '616-760' };
 
 // ---------- 1. extra builds ----------
 const build = (env, out) => spawnSync('npx', ['astro', 'build'], { cwd: HERE, env: { ...process.env, ...env, OUT_DIR: out }, encoding: 'utf8' });
-if (step('audit') || step('tags') || step('shots')) {
+if (step('audit') || step('tags') || step('shots') || step('blocks')) {
   const gates = build({ EW_GATES_OPEN: 'g1,g2,g4' }, '.check/dist-gates');
   check('build with g1, g2 and g4 open', gates.status === 0, gates.status ? (gates.stdout + gates.stderr).slice(-400) : '');
   const g3 = build({ EW_GATES_OPEN: 'g3' }, '.check/dist-g3');
@@ -90,9 +104,22 @@ if (step('audit')) {
       const prices = text.split(PRICE).length - 1;
       const caps = text.split('Monthly cap of $60').length - 1;
       if (prices < 4 || caps < 4) problems.push(`price sentence ${prices}x, cap ${caps}x`);
+      const order = [...html.matchAll(/<section class="lp-section[^"]*" id="([a-z]+)"/g)].map((m) => m[1]);
+      if (order.join() !== ORDER.filter((id) => order.includes(id)).join() || !['how', 'scope', 'pricing'].every((id) => order.includes(id))) problems.push(`sections ${order.join(', ')}`);
     }
+    const dollars = [...new Set(text.match(/\$\d[\d,]*(?:\.\d+)?/g) || [])].filter((d) => !DOLLARS.has(d));
+    if (dollars.length) problems.push(`dollar amounts ${dollars.join(', ')}`);
     check(`audit ${rel}`, !problems.length, problems.join('; '));
   }
+  // the scenes live twice (the brand generators and HowItWorks.astro): the page's steps must be the Steps preview's,
+  // but for the build hook (the page ships the scene finished with data-build, the preview builds on load)
+  const flat = (h) => h.replace(/>\s+</g, '><').replace(/ data-build| ew-scene--build/g, '').trim();
+  const stepsOf = (h) => flat((h.match(/<ol class="ew-steps ew-steps--pictured">[\s\S]*?<\/ol>/) || [''])[0]);
+  const brandSteps = stepsOf(readFileSync(HERE + '../brand/design-system/project/components/Steps/preview.html', 'utf8'));
+  const pageSteps = stepsOf(readFileSync(dist + 'index.html', 'utf8'));
+  const at = [...pageSteps].findIndex((c, i) => c !== brandSteps[i]);
+  check('how it works: the steps and scenes are the brand book\'s Steps markup (brand/tools/build-brand.mjs)', brandSteps.length > 0 && brandSteps === pageSteps,
+    brandSteps === pageSteps ? `${pageSteps.length} characters` : `differs at ${at}: ${pageSteps.slice(Math.max(0, at), at + 60)} | ${brandSteps.slice(Math.max(0, at), at + 60)}`);
   const js = readdirSync(dist + '_astro').filter((f) => f.endsWith('.js'));
   const bytes = js.reduce((n, f) => n + statSync(dist + '_astro/' + f).size, 0);
   const gz = js.reduce((n, f) => n + gzipSync(readFileSync(dist + '_astro/' + f)).length, 0);
@@ -102,6 +129,11 @@ if (step('audit')) {
   const open = readFileSync(CHECK + 'dist-gates/index.html', 'utf8');
   const openHits = ['g1', 'g2', 'g4'].map((g) => [g, GATED[g].filter((r) => r.test(open)).length, GATED[g].length]);
   check('gates-open build carries the target lines of g1, g2 and g4', openHits.every(([, n]) => n > 0), openHits.map(([g, n, of]) => `${g} ${n}/${of}`).join(', '));
+  // phase 3: with g2 open the honesty section and the scope block stack, and the go-live line lives in the scope block
+  const order = [...open.matchAll(/<section class="lp-section[^"]*" id="([a-z]+)"/g)].map((m) => m[1]);
+  const always = (open.match(/ew-always"[\s\S]*?<\/ul>/) || [''])[0].split('<li').length - 1;
+  check('gates-open build: real data only, then the scope block, then pricing; "Always yours" has two lines and no go-live line',
+    order.join() === 'how,honest,scope,pricing,faq' && always === 2 && !/click to go live/i.test(open) && /The moment you go live/.test(open), `${order.join(', ')}; always yours ${always}`);
 }
 
 // ---------- servers and the browser ----------
@@ -117,8 +149,17 @@ const UA = {
   tiktok: 'Mozilla/5.0 (Linux; Android 14; Pixel 8 Build/AP2A.240805.005; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/127.0.6533.103 Mobile Safari/537.36 trill_360103 JsSdk/1.0 NetType/WIFI Channel/googleplay AppName/musical_ly app_version/36.1.3 ByteLocale/en ByteFullLocale/en Region/US BytedanceWebview/d8a21c6',
 };
 
+// WebKit (iPhone in-app browsers run it), launched on first use; EW_PLAYWRIGHT_WEBKIT names a playwright module this
+// machine can drive WebKit with (playwright 1.64 on macOS 14 gets a frozen WebKit build it cannot open a page in)
+let wk = null;
+async function webkitBrowser() {
+  if (!wk) wk = await (await import(process.env.EW_PLAYWRIGHT_WEBKIT || 'playwright')).webkit.launch();
+  return wk;
+}
+const within = (p, ms, what) => Promise.race([p, new Promise((_, no) => setTimeout(() => no(new Error(`${what}: no answer in ${ms / 1000} s`)), ms))]);
+
 async function open(port, path, o = {}) {
-  const ctx = await browser.newContext({
+  const ctx = await (o.engine === 'webkit' ? await webkitBrowser() : browser).newContext({
     viewport: { width: o.width || 1440, height: o.height || 900 }, deviceScaleFactor: 1,
     javaScriptEnabled: o.js !== false, userAgent: o.ua, reducedMotion: o.motion || 'no-preference', colorScheme: o.scheme || 'light',
     extraHTTPHeaders: { 'cloudfront-viewer-country': o.country ?? 'US' },
@@ -132,7 +173,7 @@ async function open(port, path, o = {}) {
     hits.push(`${r.request().url()} ${r.request().postData() || ''}`);
     r.fulfill({ status: 204 });
   });
-  const page = await ctx.newPage();
+  const page = await within(ctx.newPage(), 20000, `${o.engine || 'chromium'} newPage`);
   const errors = [];
   const requests = [];
   page.on('pageerror', (e) => errors.push(String(e)));
@@ -171,8 +212,9 @@ if (step('shots')) {
       after: async ({ page }) => {
         const box = async (sel) => page.locator(sel).first().boundingBox();
         const h1 = await box('h1'); const btn = await box('[data-install="hero"]'); const stage = await box('.ew-hero__stage');
-        check(`first screen 390x844 ${id}: headline, Install and the whole card`, h1.y + h1.height <= 844 && btn.y + btn.height <= 844 && stage.y + stage.height <= 844,
-          `headline ${Math.round(h1.y + h1.height)}, button ${Math.round(btn.y + btn.height)}, card ${Math.round(stage.y)}-${Math.round(stage.y + stage.height)}`);
+        const card = `${Math.round(stage.y)}-${Math.round(stage.y + stage.height)}`;
+        check(`first screen 390x844 ${id}: headline, Install and the whole card, the card where phase 2 left it (${FOLD_P2[id]})`, h1.y + h1.height <= 844 && btn.y + btn.height <= 844 && stage.y + stage.height <= 844 && card === FOLD_P2[id],
+          `headline ${Math.round(h1.y + h1.height)}, button ${Math.round(btn.y + btn.height)}, card ${card}`);
       },
     }, false);
   }
@@ -236,6 +278,130 @@ if (step('shots')) {
   const plain = await open(MAIN, '/', { width: 390, height: 844 });
   check('in-app: the hint shows in the Facebook browser and not in a regular one', (await visible(fb.page, '[data-inapp]')) && !(await visible(plain.page, '[data-inapp]')));
   await fb.ctx.close(); await plain.ctx.close();
+}
+
+// ---------- 3b. phase 3: how it works, the scope block and pricing (TASK.md phase 3 PLAN) ----------
+// A frame is a clip of a full-page shot (the sticky header stays at the page's top, off the section). How it works is
+// shot played: step 2's scene scrolled into view, then 2.5 s.
+const SCENE = '.ew-scene--write';
+const play = async (page) => { await page.locator(SCENE).evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' })); await page.waitForTimeout(2500); };
+const sceneState = (page) => page.locator(SCENE).evaluate((el) => ({
+  cls: [...el.classList].filter((c) => /--(build|armed)$/.test(c)),
+  anims: el.getAnimations({ subtree: true }).map((a) => a.playState),
+  names: [...el.querySelectorAll('*')].map((e) => getComputedStyle(e).animationName).filter((n) => n !== 'none'),
+  starts: window.__starts ?? null,
+}));
+async function frame(name, port, path, sel, o = {}) {
+  const s = await open(port, path, { width: 390, height: 844, ...o });
+  try {
+    // played, then back to the top: a full-page shot draws the sticky header where the viewport is
+    if (o.play) { await play(s.page); await s.page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' })); await s.page.waitForTimeout(150); }
+    const clip = await s.page.evaluate((sel) => {
+      const els = sel.split(',').map((x) => document.querySelector(x.trim()));
+      const top = Math.min(...els.map((e) => e.getBoundingClientRect().top)) + scrollY;
+      const bottom = Math.max(...els.map((e) => e.getBoundingClientRect().bottom)) + scrollY;
+      return { x: 0, y: Math.floor(top), width: document.documentElement.clientWidth, height: Math.ceil(bottom - top) };
+    }, sel);
+    const overflow = await s.page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    await s.page.screenshot({ path: `${SHOTS}p3-${name}.jpg`, type: 'jpeg', quality: 80, fullPage: true, clip });
+    check(`frame p3-${name}: clean console, no horizontal scroll`, !s.errors.length && overflow <= 0, [...s.errors.slice(0, 3), overflow > 0 ? `overflow ${overflow}px` : ''].filter(Boolean).join(' | '));
+    if (o.after) await o.after(s);
+  } finally { await s.ctx.close(); }
+}
+// each bar's width over its track is its amount over the scale ($350), at least 3px; the ad test solid to its low end
+const SCALE = 350;
+async function barsToScale(page, label) {
+  const rows = await page.$$eval('.ew-cost__row', (rs) => rs.map((r) => ({
+    val: r.querySelector('.ew-cost__val').textContent.trim(),
+    track: r.querySelector('.ew-cost__track').getBoundingClientRect().width,
+    bars: [...r.querySelectorAll('.ew-cost__bar')].map((b) => b.getBoundingClientRect().width),
+  })));
+  const off = rows.flatMap((r) => {
+    const [lo, hi] = (r.val.match(/\d+/g) || []).map(Number);
+    const want = [Math.max(3, lo / SCALE * r.track)];
+    const got = [r.bars[0]];
+    if (hi) { want.push(hi / SCALE * r.track); got.push(r.bars[0] + 2 + r.bars[1]); }
+    return want.some((w, i) => Math.abs(w - got[i]) > 1) ? [`${r.val}: ${got.map((g) => g.toFixed(1))} of ${r.track.toFixed(0)}px, want ${want.map((w) => w.toFixed(1))}`] : [];
+  });
+  check(`bars to scale ${label}: each bar is its amount over $${SCALE} of its track, at least 3px`, rows.length === 5 && !off.length, off.length ? off.join('; ') : rows.map((r) => `${r.val} ${r.bars.map((b) => b.toFixed(1)).join('+')}px`).join(', '));
+}
+// the orange share: saturated orange pixels (the brand orange and orange-text, hue 8-40, not the pale tint) over the page
+async function orangeShare(page) {
+  const png = await page.screenshot({ fullPage: true, type: 'png' });
+  const ctx = await browser.newContext();
+  const p = await ctx.newPage();
+  const r = await p.evaluate(async (b64) => {
+    const img = new Image(); img.src = `data:image/png;base64,${b64}`; await img.decode();
+    const c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
+    const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0);
+    const d = g.getImageData(0, 0, c.width, c.height).data;
+    let n = 0;
+    for (let i = 0; i < d.length; i += 4) {
+      const R = d[i], G = d[i + 1], B = d[i + 2], max = Math.max(R, G, B), min = Math.min(R, G, B);
+      if (max !== R || max === min) continue;
+      const l = (max + min) / 510, s = (max - min) / (255 - Math.abs(max + min - 255)), h = 60 * (G - B) / (max - min);
+      if (h >= 8 && h <= 40 && s >= 0.55 && l >= 0.25 && l <= 0.75) n++;
+    }
+    return { share: n / (c.width * c.height), w: c.width, h: c.height };
+  }, png.toString('base64'));
+  await ctx.close();
+  return r;
+}
+if (step('blocks')) {
+  const noMotion = (why) => async ({ page }) => {
+    const st = await sceneState(page);
+    check(`step 2 ${why}: the scene is finished from the start, no animation`, !st.cls.length && !st.anims.length && !st.names.length, `classes ${st.cls.join(' ') || 'none'}, animations ${st.anims.length}, names ${st.names.join(',') || 'none'}`);
+  };
+  for (const [w, h] of [[1440, 900], [768, 1024], [390, 844]]) await frame(`how-${w}`, MAIN, '/', '#how', { width: w, height: h, play: true });
+  await frame('how-dark-390', MAIN, '/', '#how', { scheme: 'dark', play: true });
+  await frame('how-dark-1440', MAIN, '/', '#how', { width: 1440, height: 900, scheme: 'dark', play: true });
+  await frame('how-reduced-390', MAIN, '/', '#how', { motion: 'reduce', after: noMotion('with reduced motion') });
+  await frame('how-nojs-390', MAIN, '/', '#how', { js: false, after: noMotion('without javascript') });
+  try {
+    await frame('how-webkit-390', MAIN, '/', '#how', { engine: 'webkit', play: true, after: async ({ page }) => {
+      const st = await sceneState(page);
+      const boxes = await page.$$eval('.ew-scene', (ss) => ss.map((s) => { const r = s.getBoundingClientRect(); const i = s.firstElementChild.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height), Math.round(i.left - r.left)]; }));
+      check('WebKit 390: the scenes keep 4:3 and draw their insides in scene units, step 2 finished after playing', boxes.length === 3 && boxes.every(([w, h, x]) => Math.abs(w * 3 / 4 - h) <= 1 && x > 20) && st.anims.every((a) => a === 'finished'), `${boxes.map((b) => b.join('x')).join(', ')}; ${st.anims.length} animations ${[...new Set(st.anims)].join(',')}`);
+    } });
+  } catch (e) {
+    check('frame p3-how-webkit-390: WebKit opens the page', false, `${String(e.message || e).split('\n')[0]}; set EW_PLAYWRIGHT_WEBKIT (landing/README.md)`);
+  }
+  // step 2 with motion: armed below the fold, plays once in view, finished after 2.5 s, no replay after scrolling back
+  {
+    const s = await open(MAIN, '/', { width: 390, height: 844 });
+    await s.page.evaluate(() => { window.__starts = 0; document.addEventListener('animationstart', (e) => { if (e.target.closest('.ew-scene--write')) window.__starts += 1; }); });
+    const armed = await sceneState(s.page);
+    await s.page.locator(SCENE).evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await s.page.waitForTimeout(600);
+    await s.page.screenshot({ path: `${SHOTS}p3-how-mid-build-390.jpg`, type: 'jpeg', quality: 80 });
+    await s.page.waitForTimeout(1900);
+    const played = await sceneState(s.page);
+    await s.page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await s.page.waitForTimeout(400);
+    await s.page.locator(SCENE).evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await s.page.waitForTimeout(2500);
+    const again = await sceneState(s.page);
+    const n = armed.anims.length;
+    check('step 2 with motion: armed below the fold, plays once in view, every animation finished after 2.5 s, no replay after scrolling away and back',
+      n > 0 && armed.cls.join() === 'ew-scene--build,ew-scene--armed' && armed.anims.every((a) => a === 'paused') && armed.starts === 0
+      && played.cls.join() === 'ew-scene--build' && played.anims.length === n && played.anims.every((a) => a === 'finished') && played.starts === n
+      && again.anims.every((a) => a === 'finished') && again.starts === n && !s.errors.length,
+      `armed: ${armed.cls.join(' ')}, ${n} ${[...new Set(armed.anims)]}; in view: ${[...new Set(played.anims)]}, ${played.starts} starts; back again: ${again.starts} starts`);
+    await s.ctx.close();
+  }
+  for (const [w, h] of [[1440, 900], [768, 1024], [390, 844]]) await frame(`pricing-${w}`, MAIN, '/', '#pricing', { width: w, height: h, after: w === 768 ? undefined : ({ page }) => barsToScale(page, `at ${w}`) });
+  await frame('pricing-dark-390', MAIN, '/', '#pricing', { scheme: 'dark' });
+  await frame('scope-1440', MAIN, '/', '#scope', { width: 1440, height: 900 });
+  await frame('scope-390', MAIN, '/', '#scope');
+  await frame('scope-dark-390', MAIN, '/', '#scope', { scheme: 'dark' });
+  await frame('gates-g2-stack-1440', GATES, '/', '#honest, #scope', { width: 1440, height: 900 });
+  await frame('gates-g2-stack-390', GATES, '/', '#honest, #scope');
+  for (const [w, h] of [[1440, 900], [390, 844]]) {
+    const s = await open(MAIN, '/', { width: w, height: h, motion: 'reduce' });
+    const o = await orangeShare(s.page);
+    check(`orange share of the page at ${w}: about 15 % (the brand), 20 % at most`, o.share <= 0.2, `${(o.share * 100).toFixed(1)} % of ${o.w} x ${o.h}`);
+    await s.ctx.close();
+  }
 }
 
 // ---------- 4. real clicks ----------
@@ -452,6 +618,7 @@ if (step('lighthouse') && !argv.includes('--no-lighthouse')) {
 }
 
 await browser.close();
+if (wk) await wk.close();
 for (const s of servers) s.close();
 const failed = results.filter((r) => !r.ok);
 writeFileSync(CHECK + 'report.json', JSON.stringify({ at: new Date().toISOString(), failed: failed.length, results }, null, 2));

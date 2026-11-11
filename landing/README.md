@@ -10,7 +10,8 @@ run in landing/ (node 22.12 or newer; playwright for og and check comes from the
 - npm run build - dist/ (writes src/styles/tokens.generated.css from the brand's tokens.json first)
 - npm run serve -- --country DE - dist/ through the edge logic, like CloudFront (the country also comes from a cloudfront-viewer-country request header)
 - npm test - the edge tests (edge/*.test.mjs)
-- npm run check - the checks of the built site: extra builds, the html audit, screenshots, real clicks, the tags with fake ids, Lighthouse (.check/, git-ignored; --only shots|clicks|tags|audit|lighthouse, --no-lighthouse)
+- npm run check - the checks of the built site: extra builds, the html audit, screenshots, the phase 3 blocks (section frames .check/shots/p3-*.jpg, the chart to scale, step 2's build, the orange share, how it works in WebKit), real clicks, the tags with fake ids, Lighthouse (.check/, git-ignored; --only shots|blocks|clicks|tags|audit|lighthouse, --no-lighthouse)
+- WebKit on macOS 14: playwright 1.64 gets a frozen WebKit build there (2251) that it cannot open a page in ("Unknown setting: PushAPIEnabled"), so the WebKit frame fails; install playwright 1.59.1, the first version that ships that build, outside the repo (npm i --prefix <dir> playwright@1.59.1; npx playwright install webkit once) and run with EW_PLAYWRIGHT_WEBKIT=<dir>/node_modules/playwright/index.mjs npm run check
 - npm run og - redraws src/assets/og-1200x630.png from the brand's files (after a brand change)
 
 ## what lives where
@@ -19,7 +20,7 @@ run in landing/ (node 22.12 or newer; playwright for og and check comes from the
 - src/config/tags.mjs - the GA4, Google Ads, Meta and TikTok ids; an empty id loads nothing and adds no host to the content security policy
 - src/pages/[...path].astro - every page, each built twice: at its path and under /_optin/; src/pages/404.astro - no script, no tag
 - src/components/ - the sections (classes from the brand's bundle.css, ew-*); src/styles/landing.css - the page layout only (lp-*); src/styles/fonts.css - the self-hosted fonts
-- src/scripts/landing.js - the one script: consent, the tag loader, the Install events, utm pass-through, the in-app hint
+- src/scripts/landing.js - the one script: consent, the tag loader, the Install events, utm pass-through, the in-app hint, and step 2's build in view (how it works: the scene ships finished, the script arms it below the fold and plays it once when 40 % of it shows; nothing moves without the script or with reduced motion)
 - edge/geo.mjs - the viewer-request logic shared by scripts/serve.mjs and the CloudFront Function; edge/headers.mjs - the static security headers
 - read from outside landing/, never copied: brand/design-system/project/tokens.json and components/bundle.css, brand/logo/ (lockups, favicons), brand/shopify/ (the official App Store badges)
 

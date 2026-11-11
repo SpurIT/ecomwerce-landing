@@ -1,0 +1,33 @@
+---
+// CostChart (brand book; copy.md, pricing; DECISIONS.md 2026-11-11): what testing costs, every bar on one dollar scale
+// from $0 to the top of an ad test, so a page, a week, four weeks and the cap sit next to one ad test. The price facts
+// live here once (docs/specs/billing.md BL-1); every amount and bar width below is computed from them, none typed. The
+// cap stops building at 20 paid pages a cycle, so the chart never says "20 or more". The ad test is market data (the
+// personas, "p1 and p2 in numbers"; market posts x0.5) and shows only with its source line. No hover and no motion:
+// each bar carries its amount, so the chart reads the same without the script and as a list to a screen reader.
+const PRICE = { perPage: 3, freePages: 2, capPages: 20 };
+const SCALE = 350;
+const WEEK = 3; // products tested a week (personas, p2: "about 3 products a week"; market posts x0.5)
+const ADS = { low: 150, high: 350 };
+const share = (usd: number) => `${+(usd / SCALE * 100).toFixed(3)}%`;
+const usd = (n: number) => `$${n}`;
+const rows: [string, number][] = [
+  ['One product page', 1],
+  [`A week at ${WEEK} products`, WEEK],
+  [`4 weeks at ${WEEK} products a week`, 4 * WEEK],
+  [`${PRICE.capPages} product pages, the monthly cap`, PRICE.capPages],
+];
+---
+<div class="ew-cost">
+  <div class="ew-cost__head"><h3 class="ew-heading-3">What testing costs</h3><p class="ew-small">After your {PRICE.freePages} free product pages, each product you test is one product page at {usd(PRICE.perPage)}.</p></div>
+  <dl class="ew-cost__rows">
+    {rows.map(([label, pages]) => (
+      <div class="ew-cost__row"><dt>{label}</dt><dd><span class="ew-cost__val">{usd(pages * PRICE.perPage)}</span><span class="ew-cost__track" aria-hidden="true"><span class="ew-cost__bar" style={`width:${share(pages * PRICE.perPage)}`}></span></span></dd></div>
+    ))}
+    <div class="ew-cost__row ew-cost__row--ads"><dt>Ads to test one product</dt><dd><span class="ew-cost__val">about {usd(ADS.low)}-{ADS.high}</span><span class="ew-cost__track" aria-hidden="true"><span class="ew-cost__bar ew-cost__bar--ads" style={`width:${share(ADS.low)}`}></span><span class="ew-cost__bar ew-cost__bar--more" style={`width:calc(${share(ADS.high - ADS.low)} - 2px)`}></span></span></dd></div>
+  </dl>
+  <div class="ew-cost__notes">
+    <p class="ew-note">At the {usd(PRICE.capPages * PRICE.perPage)} cap, building pauses until your next 30 days start.</p>
+    <p class="ew-note">Ads: what dropshippers report in Reddit posts from October 2025 to October 2026, a median of $50 a day for a median of 3 days, up to the $250-350 a much-upvoted post calls the most suggested test budget.</p>
+  </div>
+</div>
