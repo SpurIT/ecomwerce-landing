@@ -11,13 +11,13 @@ The landing page has one job: turn a click on an ad into a click on Install in t
 ## Sections, in order
 
 1. Header (`SiteHeader`): the lockup on the left; a "Pricing" link and a small primary button "Install free" on the right.
-2. Hero (`Hero`): eyebrow, the promise in `display-xl`, a lead in `text-lead`, the primary button "Install free" and a secondary "See a sample page", then the price sentence in `text-small`. The orange stage with a product card on the right, with the build motion once.
+2. Hero (`Hero`): eyebrow, the promise in `display-xl`, a lead in `text-lead`, the primary button "Install free" and a secondary "See a sample page", then the price sentence in `text-small`, then "No Shopify store yet?": a closed disclosure with three steps (press Install and create the Shopify account and store when Shopify asks, add the product, pick it in Ecomwerce), a note that the store has its own Shopify plan, and its own Install. On the "first product page" variant it sits right under the primary button. The orange stage with a product card on the right, with the build motion once.
 3. How it works (`Steps`): pick a product; Ecomwerce writes the page in a new theme on your store; preview, then go live. The order is real, so the steps carry numbers.
 4. What's on the page (`PageAnatomy`): a real page Ecomwerce generated, with short labels on its parts (headline, benefits, FAQ, buy box). A real build on a development store, never a mock.
 5. Real data only (`HonestyList`): what Ecomwerce never adds, and what stays the merchant's. Publish this section only after the open P0 items on app-added proof in docs/pre-launch-backlog.md are fixed (the preset stock bar, the app-added "verified" badge, the default quotes and claims in hand-added blocks). Until then the page would promise something the app does not do yet.
 6. Pricing (`PricingCard`): pay as you go, the price sentence word for word, the $60 cap, billed on the Shopify invoice.
-7. FAQ (`FAQ`): the merchant's questions in their words. Answers are drafts: check each against the app before launch.
-8. Final call (`FinalCall`): the promise again in `display-l`, the primary button, and the official "Find it on the Shopify App Store" badge.
+7. FAQ (`FAQ`): the merchant's questions in their words, "Do I need a Shopify store?" among them. Answers are drafts: check each against the app before launch.
+8. Final call (`FinalCall`): the promise again in `display-l`, the primary button, and the official "Find it on the Shopify App Store" badge, then the price sentence and "No Shopify store yet?".
 9. Footer (`SiteFooter`): the lockup, "Made by SpurIT", support email, privacy policy, terms, cookies, a legal notice and "Privacy choices".
 
 ## Headline options
@@ -25,7 +25,7 @@ The landing page has one job: turn a click on an ad into a click on Install in t
 - "A product page for every product you test." Usable now: no number, straight from what the app does.
 - "Your next product page in about two minutes." Measured on our test store (p75 1 min 57 s for one product page, October 2026). Use it after the listing claim is decided (decision D1) and the time is re-measured on the production app.
 - "Product pages with real data only." Use it after the P0 items above are fixed.
-- Match the ad: a merchant who clicked a "first product page" ad lands on a hero about the first page; one who clicked a "page per test" ad lands on the test-loop promise. Personas: first-store beginners who already have a product, and product testers (tasks/persona-sizing).
+- Match the ad: a merchant who clicked a "first product page" ad lands on a hero about the first page; one who clicked a "page per test" ad lands on the test-loop promise. Personas: first-store beginners who already have a product, and product testers (tasks/persona-sizing). The ads reach visitors without a store or a product too, so the page gives them a path ("No Shopify store yet?" and the FAQ) instead of a dead end.
 
 ## Shopify's name and badge
 

@@ -1,6 +1,8 @@
 ---
-// FinalCall (brand book): the hero's headline again on orange, Install and the official badge, the price sentence.
+// FinalCall (brand book): the hero's headline again on orange, Install and the official badge, the price sentence,
+// then "No Shopify store yet?" (NoStore).
 import badge from '../../../brand/shopify/badge-shopify-app-store-dark.svg?url';
+import NoStore from './NoStore.astro';
 import { installHref } from '../lib/site.mjs';
 
 interface Props { headline: string; campaign: string }
@@ -15,6 +17,7 @@ const { headline, campaign } = Astro.props;
         <a class="ew-badge" data-install="final-badge" href={installHref(campaign, 'final-badge')}><img src={badge} width="211" height="56" alt="Find it on the Shopify App Store" loading="lazy"></a>
       </div>
       <p class="ew-small">Free to install. Your first 2 product pages are free, then $3 per product page. Monthly cap of $60.</p>
+      <NoStore campaign={campaign} placement="no-store-final" onOrange />
     </div>
   </div>
 </section>

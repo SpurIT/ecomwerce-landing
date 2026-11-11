@@ -2,11 +2,14 @@
 // Hero (brand book): eyebrow, the variant's headline, lead, Install, the launch stand-in or "See a sample page" (g3),
 // the in-app hint (shown by the script in Instagram, Facebook and TikTok only), the price sentence, the language line,
 // and the product card on the orange stage with the build motion (ProductCard, ew-card--build), compact on phones.
+// "No Shopify store yet?" (NoStore) sits right under Install where the variant says so (the p1 page), else last.
+import NoStore from './NoStore.astro';
 import { SAMPLE } from '../data/landing.mjs';
 import { installHref, isOpen } from '../lib/site.mjs';
 
-interface Props { variant: { eyebrow: string; lead: string }; headline: string; campaign: string }
+interface Props { variant: { eyebrow: string; lead: string; noStore?: 'under-install' | 'last' }; headline: string; campaign: string }
 const { variant, headline, campaign } = Astro.props;
+const noStoreFirst = variant.noStore === 'under-install';
 const real = isOpen('g3');
 if (real && !(SAMPLE.heroPhoto && SAMPLE.heroTitle && SAMPLE.heroPrice)) {
   throw new Error('g3 is open, but SAMPLE.heroPhoto, heroTitle or heroPrice in src/data/landing.mjs is empty: the hero shows a real product only');
@@ -30,6 +33,7 @@ const label = real
             ? <a class="ew-btn ew-btn--secondary ew-btn--lg" href="#sample">See a sample page</a>
             : <a class="ew-textlink" href="#how">How it works</a>}
         </div>
+        {noStoreFirst && <NoStore campaign={campaign} placement="no-store-hero" />}
         <div class="lp-inapp" data-inapp hidden>
           <p>Installing needs your Shopify login. Not logged in here? Open this page in your browser, or copy the link.</p>
           <button type="button" class="ew-btn ew-btn--secondary ew-btn--sm" data-copy-link aria-live="polite">Copy link</button>
@@ -42,6 +46,7 @@ const label = real
           <p class="ew-small">Free to install. Your first 2 product pages are free, then $3 per product page. Monthly cap of $60.</p>
           <p class="ew-note">Product pages are written in English.</p>
         </div>
+        {!noStoreFirst && <NoStore campaign={campaign} placement="no-store-hero" />}
       </div>
       <div class="ew-stage ew-hero__stage">
         <div class="lp-card-figure" role="img" aria-label={label}>

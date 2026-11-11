@@ -189,6 +189,8 @@ if (step('shots')) {
     after: async ({ page }) => {
       const hidden = await page.evaluate(() => ['#consent', '[data-consent-link]', '[data-inapp]'].map((s) => document.querySelector(s)?.hidden));
       check('no javascript: no banner, no "Privacy choices", no in-app hint; Install links keep the defaults', hidden.every(Boolean) && (await page.locator('[data-install="hero"]').getAttribute('href')).includes('utm_content=hero'));
+      await page.locator('.lp-hero .lp-nostore summary').click();
+      check('no javascript: "No Shopify store yet?" still opens', await page.locator('.lp-hero .lp-nostore').evaluate((d) => d.open));
     },
   });
   await shot('default-reduced-390', MAIN, '/', {
@@ -200,6 +202,14 @@ if (step('shots')) {
   }, false);
   await shot('default-motion-mid-390', MAIN, '/', { width: 390, height: 844, motion: 'no-preference', before: async (p) => { await p.reload(); await p.waitForTimeout(500); await p.screenshot({ path: `${SHOTS}default-motion-500ms-390.jpg`, type: 'jpeg', quality: 80 }); } }, false);
   await shot('default-dark-390', MAIN, '/', { width: 390, height: 844, scheme: 'dark' });
+  // "No Shopify store yet?" opened: the p1 hero at 390 (light and dark) and the final call at 1440
+  const openNoStore = (sel) => async (p) => { await p.locator(`${sel} .lp-nostore summary`).click(); };
+  await shot('first-nostore-open-390', MAIN, '/first-product-page/', { width: 390, height: 844, before: openNoStore('.lp-hero') }, false);
+  await shot('first-nostore-open-dark-390', MAIN, '/first-product-page/', { width: 390, height: 844, scheme: 'dark', before: openNoStore('.lp-hero') }, false);
+  const openFinal = async (p) => { await openNoStore('.ew-final')(p); await p.locator('.ew-final').evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' })); };
+  await shot('default-final-nostore-1440', MAIN, '/', { before: openFinal }, false);
+  await shot('default-nostore-open-1440', MAIN, '/', { before: openNoStore('.lp-hero') }, false);
+  await shot('first-final-nostore-open-390', MAIN, '/first-product-page/', { width: 390, height: 844, before: openFinal }, false);
   await shot('default-dark-1440', MAIN, '/', { scheme: 'dark' }, false);
   await shot('default-768', MAIN, '/', { width: 768, height: 1024 });
   await shot('privacy-1440', MAIN, '/privacy/', {});
@@ -239,17 +249,40 @@ if (step('clicks')) {
         || u.searchParams.get('utm_source') !== 'ecomwerce.com' || u.searchParams.get('utm_medium') !== 'landing'
         || u.searchParams.get('utm_campaign') !== id || u.searchParams.get('utm_content') !== place;
     });
-    check(`Install links on ${v.path}: the listing, the landing's utm, the variant and the placement`, links.length === 6 && !bad.length, `${links.length} links: ${links.map(([p]) => p).join(', ')}${bad.length ? '; bad ' + bad.map(([p]) => p) : ''}`);
+    check(`Install links on ${v.path}: the listing, the landing's utm, the variant and the placement`, links.length === 8 && !bad.length, `${links.length} links: ${links.map(([p]) => p).join(', ')}${bad.length ? '; bad ' + bad.map(([p]) => p) : ''}`);
     await ctx.close();
   }
   {
     const { ctx, page } = await open(MAIN, '/first-product-page/?utm_source=meta&utm_medium=paid_social&utm_campaign=p1-test&utm_content=ad7&fbclid=abc');
     const hrefs = await page.$$eval('a[data-install]', (as) => as.map((a) => a.href));
     const ok = hrefs.every((h) => { const u = new URL(h); return u.searchParams.get('utm_source') === 'meta' && u.searchParams.get('utm_medium') === 'paid_social' && u.searchParams.get('utm_campaign') === 'p1-test' && u.searchParams.get('utm_content') === 'ad7' && !u.searchParams.has('fbclid') && u.searchParams.get('q') === 'ecomwerce'; });
-    check('a visit with utm passes exactly its utm to every Install link', ok && hrefs.length === 6);
+    check('a visit with utm passes exactly its utm to every Install link', ok && hrefs.length === 8);
     const want = await page.locator('[data-install="hero"]').getAttribute('href');
     await Promise.all([page.waitForURL(`${listing.origin}/**`), page.locator('[data-install="hero"]').click()]);
     check('a real click on the hero Install opens the listing with the utm', page.url() === want, page.url());
+    await ctx.close();
+  }
+  {
+    // "No Shopify store yet?" (2026-11-11): right under Install on the p1 page, last in the hero text elsewhere; closed on
+    // arrival; opens on a click; its Install has its own placement and opens the listing
+    const under = async (path) => {
+      const { ctx, page } = await open(MAIN, path, { width: 390, height: 844 });
+      const s = await page.locator('.lp-hero .lp-nostore summary').boundingBox();
+      const price = await page.locator('.lp-hero__fine .ew-small').boundingBox();
+      await ctx.close();
+      return s.y < price.y;
+    };
+    const [p1, p2, google] = [await under('/first-product-page/'), await under('/'), await under('/product-page-builder/')];
+    check('no store yet: right under Install on /first-product-page/, after the price sentence on / and /product-page-builder/', p1 && !p2 && !google);
+    const { ctx, page } = await open(MAIN, '/first-product-page/', { width: 390, height: 844 });
+    const d = page.locator('.lp-hero .lp-nostore');
+    const inner = d.locator('a[data-install]');
+    const closed = !(await d.evaluate((el) => el.open)) && !(await inner.isVisible());
+    await d.locator('summary').click();
+    const href = await inner.getAttribute('href');
+    check('no store yet: closed on arrival, opens on a click, its Install has the placement no-store-hero', closed && (await inner.isVisible()) && new URL(href).searchParams.get('utm_content') === 'no-store-hero', href);
+    await Promise.all([page.waitForURL(`${listing.origin}/**`), inner.click()]);
+    check('a real click on the no-store Install opens the listing', page.url() === href, page.url());
     await ctx.close();
   }
   {

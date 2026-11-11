@@ -1,0 +1,24 @@
+---
+// "No Shopify store yet?" (operator, 2026-11-11): the path for a visitor without a store, under Install in the hero
+// and in the final call. A native details, so it works without the script and takes one line until opened.
+// Shopify's own Install modal asks a visitor who is not logged in to create a Shopify account or log in, and its
+// signup link carries the app (checked logged out on 2026-11-11); the app picks products from the catalog only, so
+// adding the product is a step of its own. Its Install link has its own placement (no-store-*), so the reports
+// keep these clicks apart from the main buttons'. Copy: tasks/landing/copy.md, no store yet.
+import { installHref } from '../lib/site.mjs';
+
+interface Props { campaign: string; placement: 'no-store-hero' | 'no-store-final'; onOrange?: boolean }
+const { campaign, placement, onOrange = false } = Astro.props;
+---
+<details class="lp-nostore">
+  <summary>No Shopify store yet?</summary>
+  <div class="lp-nostore__body">
+    <ol>
+      <li>Press Install, then create your Shopify account and store when Shopify asks.</li>
+      <li>Add your product to the store, by hand or with your supplier app.</li>
+      <li>Pick that product in Ecomwerce, and it writes the page.</li>
+    </ol>
+    <p class="ew-note">Your store has its own Shopify plan, billed by Shopify.</p>
+    <a class:list={['ew-btn', 'ew-btn--sm', onOrange ? 'ew-btn--on-orange' : 'ew-btn--secondary']} data-install={placement} href={installHref(campaign, placement)}>Install free</a>
+  </div>
+</details>

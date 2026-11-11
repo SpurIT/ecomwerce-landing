@@ -35,7 +35,9 @@ export const SAMPLE = {
   built: '', // the build date for the caption, for example 2 December 2026
 };
 
-// A variant changes only the eyebrow, the headline (hero and final call, and the title), the lead and the hero visual.
+// A variant changes only the eyebrow, the headline (hero and final call, and the title), the lead, the hero visual and
+// where "No Shopify store yet?" sits in the hero: noStore 'under-install' on the p1 page, whose visitors arrive without
+// a store most often (personas p1), else last in the hero text (2026-11-11).
 export const VARIANTS = {
   default: {
     path: '/',
@@ -52,6 +54,7 @@ export const VARIANTS = {
     headline: { target: 'Your first product page, written for you.' },
     title: { target: 'Ecomwerce: your first product page, written for you' },
     lead: "Already have a product in your Shopify store? Pick it, and Ecomwerce writes its page: headline, benefits and FAQ. See it on your store first, then go live when you're ready.",
+    noStore: 'under-install',
   },
   builder: {
     path: '/product-page-builder/',

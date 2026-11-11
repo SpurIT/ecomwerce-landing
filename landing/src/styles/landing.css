@@ -26,6 +26,20 @@ a{color:inherit}
 .lp-inapp__field label{font-size:13px;line-height:1.4;color:var(--text-3)}
 .lp-inapp__field input{box-sizing:border-box;width:100%;font:400 15px/1.4 var(--font-sans);color:var(--text);background:var(--surface);border:1.5px solid var(--control-border);border-radius:var(--radius-s);padding:10px 12px}
 
+/* "No Shopify store yet?" (components/NoStore.astro, 2026-11-11): a native details under Install, one line until opened */
+.lp-nostore{max-width:34em}
+.lp-nostore summary{display:inline-flex;align-items:center;gap:8px;padding:4px 0;cursor:pointer;list-style:none;font:600 var(--text-small)/1.4 var(--font-sans);color:var(--text);text-decoration:underline;text-underline-offset:4px}
+.lp-nostore summary::-webkit-details-marker{display:none}
+.lp-nostore summary::after{content:"";flex:none;width:6px;height:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-2px) rotate(45deg)}
+.lp-nostore[open] summary::after{transform:translateY(1px) rotate(225deg)}
+.lp-nostore summary:hover{color:var(--orange-text)}
+.lp-nostore__body{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding-top:10px}
+.lp-nostore__body ol{margin:0;padding-left:1.25em;display:flex;flex-direction:column;gap:6px;font-size:var(--text-small);line-height:1.5;color:var(--text-2)}
+.ew-final .lp-nostore{width:100%;max-width:30em}
+.ew-final .lp-nostore__body{align-items:center}
+.ew-final .lp-nostore__body ol{text-align:left}
+.ew-final .lp-nostore summary,.ew-final .lp-nostore summary:hover,.ew-final .lp-nostore__body ol,.ew-final .lp-nostore .ew-note{color:var(--ink-fixed)}
+
 /* sections */
 .lp-section{padding:var(--space-24) 0}
 .lp-section + .lp-section{padding-top:0}
