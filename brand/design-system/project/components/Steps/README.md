@@ -1,5 +1,9 @@
-How it works in three steps: pick a product, Ecomwerce writes the page, preview then go live.
+How it works in three steps: pick a product, Ecomwerce writes the page, preview then go live. On the landing page each step has a drawn scene on the orange stage.
 
-- Markup: `ol.ew-steps` of `li.ew-step` with `.ew-step__n`, a `heading-3` title and a paragraph.
+- Markup: `ol.ew-steps.ew-steps--pictured` of `li.ew-step`, each with `.ew-step__pic` (one scene) and `.ew-step__text` (`.ew-step__n`, a `heading-3` title and a paragraph). Without pictures (a document, a quick read) drop `ew-steps--pictured` and the two wrappers: the plain steps keep their numbers and the rule above the text.
 - The numbers mean order, so keep exactly the real steps of the app; do not add steps for symmetry.
-- Any time claim carries a footnote with its measurement.
+- Scenes: `.ew-scene` is the orange stage at 4:3, drawn at 360 x 270 and scaled with its width (container units), in fixed colours, so it looks the same in both themes. `ew-scene--pick`: the catalog as a list, one product picked. `ew-scene--write`: a product page with its headline, benefits, reasons it stands out and FAQ. `ew-scene--live`: the page on a phone, Go live, the current theme kept in the theme library. Each scene is `role="img"` with a text alternative; its insides are `aria-hidden`.
+- A scene is a schematic: grey lines stand for text and the product is the neutral placeholder. Never make it look like a screenshot, and never draw what the launch app does not do: no time, review, star, stock bar or homepage. Real crops of the admin replace the scenes once the launch interface ships.
+- The build: `ew-scene--build` on the write scene plays the brand's one motion once (the photo fills, the headline writes in, the buy pill appears, then benefits, reasons and the FAQ), about 1.8 s. The landing's script adds it together with `ew-scene--armed` while the scene is below the viewport, and drops `ew-scene--armed` when the scene comes into view. Without the script, or with reduced motion, the scene is finished from the start.
+- Any time claim carries a footnote with its measurement, and no scene shows a time.
+- Between 721 and 1099px the steps stack with the scene beside the text; at 720px and below the scene sits above the text.

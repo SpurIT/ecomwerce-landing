@@ -57,6 +57,7 @@ Never use: magic, revolutionary, guaranteed, 10x, explode your sales, winning pr
 
 - Show the merchant's product the way their shopper will see it: a real product photo in the white window of a product card, on `orange`.
 - Show real interface: crops of the Ecomwerce admin and of a page Ecomwerce generated on a development store. No browser chrome, no desktop wallpaper (Shopify requirement 4.4.4).
+- Until the launch interface ships, How it works draws its steps as schematic scenes on the orange stage (Steps): grey lines for text, the neutral placeholder product, nothing the app does not do. A scene never imitates a screenshot, and real crops replace it.
 - Never show invented reviews, star ratings, review counts, "people bought this" lines, stock bars or countdowns in any mock, ad, screenshot or example, not even as decoration.
 - Use the neutral product placeholder in the previews only until a real development-store product exists. Never show another company's product or logo.
 - No stock photos of people at laptops, no 3D blobs, no AI art.
@@ -69,7 +70,7 @@ Never use: magic, revolutionary, guaranteed, 10x, explode your sales, winning pr
 
 ## Motion
 
-- The one motion is the build: the photo window fills, the title line writes in, the buy button appears. Use it in the hero and in video ads, 1.2 to 2 seconds, once.
+- The one motion is the build: the photo window fills, the title line writes in, the buy button appears. Use it in the hero and in video ads, 1.2 to 2 seconds, once. On the landing page it plays once more, in How it works (Steps, the write scene), when that scene comes into view.
 - With `prefers-reduced-motion`, show the finished card and nothing else. The first frame of any video is the finished page.
 
 ## Where the brand applies

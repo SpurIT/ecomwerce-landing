@@ -299,6 +299,139 @@ const compactCard = ({ building = false } = {}) => `<div class="ew-stage" style=
   <span class="ew-btn ew-btn--on-orange ew-btn--block ew-card__buy"${building ? ' style="opacity:.35"' : ''}>Add to cart</span>
 </div></div>`
 const SWITCH = (label, on, disabled) => `<input class="ew-switch" type="checkbox" role="switch"${on ? ' checked' : ''}${disabled ? ' disabled' : ''} aria-label="${label}">`
+// phase 3 (2026-11-11, operator): Steps' pictured state with three drawn scenes, CostChart and ScopeList (tasks/landing/
+// BRIEF-phase-3.md). A scene is drawn at a nominal 360 x 270 and scales with its width (container units: 1cqi is 3.6px
+// there); its colours are fixed, like the product card's, so it reads the same in both themes. Grey lines stand for
+// text: a scene is a schematic, never a screenshot, and shows nothing the launch app does not do (no time, review,
+// star or stock bar).
+const u = (px) => `${+(px / 3.6).toFixed(3)}cqi`
+const FX = { ink: '#1A1410', white: '#FFFFFF', muted: '#5E554F', faint: '#736963', line: '#E9E2DB', tint: '#FFEADB', photo: '#F3EEE8', box: '#8F857E' }
+const PHASE3_CSS = withFallbacks(`/* Steps, pictured: a drawn scene above each step's text */
+.ew-steps--pictured{row-gap:48px}
+.ew-steps--pictured .ew-step{border-top:0;padding-top:0;gap:20px}
+.ew-step__pic{margin:0}
+.ew-step__text{display:flex;flex-direction:column;gap:10px;padding-top:16px;border-top:2px solid var(--text)}
+@media (min-width:721px) and (max-width:1099px){.ew-steps--pictured{grid-template-columns:1fr;row-gap:40px}.ew-steps--pictured .ew-step{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:32px;align-items:center}}
+/* the scenes: the orange stage at 4:3, white panels with fixed colours */
+.ew-scene{position:relative;display:block;aspect-ratio:4/3;container-type:inline-size;overflow:hidden;border-radius:var(--radius-l);background:var(--orange);color:${FX.ink}}
+:where(.ew-scene) span{display:block}
+.ew-scene__panel{position:absolute;background:${FX.white};border-radius:${u(14)};box-shadow:var(--shadow-card)}
+.ew-scene__label{font:500 ${u(11)}/1.3 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:${FX.faint};white-space:nowrap}
+.ew-scene__line{height:${u(8)};border-radius:999px;background:${FX.line}}
+.ew-scene .ew-photo{display:block;width:100%;height:100%}
+/* 01 pick: the catalog as a list, one product picked */
+.ew-scene--pick .ew-scene__panel{left:${u(28)};right:${u(28)};top:${u(26)};bottom:${u(26)};padding:${u(14)};display:flex;flex-direction:column;gap:${u(10)}}
+.ew-pick{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:${u(6)}}
+.ew-pick li{display:flex;align-items:center;gap:${u(10)};height:${u(36)};padding:0 ${u(8)};border-radius:${u(10)}}
+.ew-pick__box{flex:none;display:grid;place-items:center;width:${u(16)};height:${u(16)};border-radius:${u(4)};box-shadow:inset 0 0 0 ${u(1.5)} ${FX.box}}
+.ew-pick__box svg{width:78%;height:78%}
+.ew-pick__thumb{flex:none;width:${u(26)};height:${u(26)};border-radius:${u(6)};overflow:hidden;background:${FX.photo}}
+.ew-pick .ew-scene__line{flex:none}
+.ew-pick__on{background:${FX.tint}}
+.ew-pick__on .ew-pick__box{background:${FX.ink};box-shadow:none;color:${FX.white}}
+.ew-pick__name{flex:1 1 auto;min-width:0;font:600 ${u(13)}/1.2 var(--font-sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ew-pick__price{flex:none;font:500 ${u(12)}/1 var(--font-mono)}
+/* 02 write: a product page that fills in; it runs past the stage's bottom edge */
+.ew-scene--write .ew-scene__panel{left:${u(36)};right:${u(36)};top:${u(22)};bottom:${u(-20)};padding:${u(14)};display:flex;flex-direction:column;gap:${u(10)}}
+.ew-write__top{display:flex;gap:${u(12)};align-items:flex-start}
+.ew-write__photo{flex:none;width:${u(70)};aspect-ratio:1;border-radius:${u(9)};overflow:hidden;background:${FX.photo}}
+.ew-write__head{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:${u(6)}}
+.ew-write__h{height:${u(8)};border-radius:999px;background:${FX.ink}}
+.ew-write__buy{height:${u(18)};width:52%;margin-top:${u(6)};border-radius:999px;background:${FX.ink}}
+.ew-write__block{display:flex;flex-direction:column;gap:${u(5)}}
+.ew-write__four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:${u(6)}}
+.ew-write__four span{height:${u(20)};border-radius:${u(6)};background:${FX.tint}}
+.ew-write__q{display:flex;align-items:center;justify-content:space-between;gap:${u(8)};height:${u(12)}}
+.ew-write__q::after{content:"+";font:400 ${u(12)}/1 var(--font-mono);color:${FX.faint}}
+/* the build: the photo fills, the headline writes in, the buy pill appears, then benefits, reasons and the faq, once,
+   about 1.8 s. armed (the landing's script, while the scene is below the viewport) holds the first frame */
+.ew-scene--build .ew-write__photo .ew-photo{animation:ew-fill .55s cubic-bezier(.2,.7,.2,1) .1s both}
+.ew-scene--build .ew-write__head .ew-scene__label{animation:ew-in .3s ease-out .35s both}
+.ew-scene--build .ew-write__h{animation:ew-write .45s steps(14,end) .45s both}
+.ew-scene--build .ew-write__h+.ew-write__h{animation-delay:.62s}
+.ew-scene--build .ew-write__buy{animation:ew-buy .3s ease-out .85s both}
+.ew-scene--build .ew-write__block{animation:ew-in .35s ease-out 1s both}
+.ew-scene--build .ew-write__block+.ew-write__block{animation-delay:1.2s}
+.ew-scene--build .ew-write__block+.ew-write__block+.ew-write__block{animation-delay:1.4s}
+.ew-scene--armed,.ew-scene--armed *{animation-play-state:paused!important}
+@media (prefers-reduced-motion:reduce){.ew-scene--build,.ew-scene--build *{animation:none!important}}
+/* 03 live: the page on a phone, Go live, the current theme kept in the theme library */
+.ew-live__phone{position:absolute;left:${u(34)};top:${u(22)};width:${u(118)};height:${u(236)};padding:${u(6)};border-radius:${u(22)};background:${FX.ink};box-shadow:var(--shadow-card)}
+.ew-live__screen{height:100%;padding:${u(8)};border-radius:${u(17)};overflow:hidden;background:${FX.white};display:flex;flex-direction:column;gap:${u(7)}}
+.ew-live__img{aspect-ratio:1;border-radius:${u(8)};overflow:hidden;background:${FX.photo}}
+.ew-live__t{height:${u(8)};width:80%;border-radius:999px;background:${FX.ink}}
+.ew-live__p{height:${u(6)};width:40%;border-radius:999px;background:${FX.line}}
+.ew-live__buy{height:${u(16)};border-radius:999px;background:${FX.ink}}
+.ew-live__l{height:${u(6)};border-radius:999px;background:${FX.line}}
+.ew-live__side{position:absolute;left:${u(168)};right:${u(20)};top:${u(66)};display:flex;flex-direction:column;gap:${u(14)}}
+.ew-live__go{display:flex;align-items:center;justify-content:center;height:${u(36)};border-radius:999px;background:${FX.ink};color:${FX.white};font:600 ${u(14)}/1 var(--font-sans)}
+.ew-scene .ew-live__lib{position:static;padding:${u(12)};display:flex;flex-direction:column;gap:${u(8)}}
+.ew-live__theme{display:flex;align-items:center;gap:${u(9)}}
+.ew-live__swatch{flex:none;width:${u(24)};height:${u(24)};border-radius:${u(6)};background:${FX.tint};box-shadow:inset 0 0 0 ${u(1)} ${FX.line}}
+.ew-live__theme b{display:block;font:600 ${u(12.5)}/1.2 var(--font-sans);color:${FX.ink}}
+.ew-live__theme span span{font:400 ${u(11)}/1.3 var(--font-sans);color:${FX.muted}}
+/* CostChart: every dollar on one scale, $0 to the top of an ad test; our bars orange, the ad test neutral; each bar
+   labelled, no hover, no motion, so it reads the same without the script */
+.ew-cost{--ew-cost-ours:var(--orange-text);display:flex;flex-direction:column;gap:20px;padding:28px;border:1px solid var(--line);border-radius:var(--radius-l);background:var(--surface)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ew-cost{--ew-cost-ours:var(--orange)}}
+:root[data-theme="dark"] .ew-cost{--ew-cost-ours:var(--orange)}
+.ew-cost__head{display:flex;flex-direction:column;gap:8px}
+.ew-cost__rows{margin:0;display:flex;flex-direction:column;gap:16px}
+.ew-cost__row{position:relative}
+.ew-cost__row dt{padding-right:4.5em;font-size:var(--text-small);line-height:1.4;color:var(--text)}
+.ew-cost__row dd{margin:0}
+.ew-cost__val{position:absolute;top:0;right:0;font:500 15px/1.4 var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text);white-space:nowrap}
+.ew-cost__track{display:flex;gap:2px;height:12px;margin-top:6px;border-radius:0 4px 4px 0;background:var(--surface-2)}
+.ew-cost__bar{flex:none;display:block;height:100%;min-width:3px;border-radius:0 4px 4px 0;background:var(--ew-cost-ours)}
+.ew-cost__bar--ads{background:var(--control-border);border-radius:0}
+.ew-cost__bar--more{background:repeating-linear-gradient(135deg,var(--control-border) 0 2px,transparent 2px 6px)}
+.ew-cost__row--ads{padding-top:16px;border-top:1px solid var(--line)}
+.ew-cost__row--ads dt{padding-right:8.5em}
+.ew-cost__row--ads .ew-cost__val{top:16px}
+.ew-cost__notes{display:flex;flex-direction:column;gap:8px}
+/* ScopeList: what Ecomwerce writes and what stays yours, on HonestyList's two panels */
+.ew-scope .ew-honest__col{gap:16px}
+.ew-writes{--ew-scope-dot:var(--orange-text)}
+.ew-yours{--ew-scope-dot:var(--text)}
+.ew-scope .ew-scope__list{gap:10px}
+.ew-scope .ew-scope__list li{display:block;position:relative;padding-left:20px;line-height:1.45;color:var(--text)}
+.ew-scope__list li::before{content:"";position:absolute;left:1px;top:.5em;width:8px;height:8px;border-radius:999px;background:var(--ew-scope-dot)}
+.ew-scope__sub{display:block;margin-top:2px;font-size:var(--text-small);line-height:1.5;color:var(--text-2)}
+.ew-scope .ew-scope__more{padding-top:16px;border-top:1px solid var(--line)}
+@media (max-width:720px){.ew-cost{padding:20px}}
+`)
+
+// the scenes' markup: one place for the previews; the landing's HowItWorks.astro writes the same markup
+const PHOTO_D = PHOTO.replace(' role="img" aria-label="Product photo placeholder"', ' aria-hidden="true" focusable="false"')
+const CHECK_W = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>'
+const SCENE_ALT = {
+  pick: 'Illustration: products from your Shopify catalog in a list, with one of them, a ceramic pour-over set, picked.',
+  write: 'Illustration: a product page filling in with a headline, benefits, reasons it stands out and an FAQ.',
+  live: 'Illustration: the new product page on a phone, a Go live button, and your current theme kept in your theme library.',
+}
+const pickRow = (w) => `<li><span class="ew-pick__box"></span><span class="ew-pick__thumb"></span><span class="ew-scene__line" style="width:${w}%"></span></li>`
+const scenePick = () => `<div class="ew-scene ew-scene--pick" role="img" aria-label="${SCENE_ALT.pick}"><div class="ew-scene__panel" aria-hidden="true"><span class="ew-scene__label">Shopify catalog</span><ul class="ew-pick">${pickRow(46)}<li class="ew-pick__on"><span class="ew-pick__box">${CHECK_W}</span><span class="ew-pick__thumb">${PHOTO_D}</span><span class="ew-pick__name">Ceramic pour-over set</span><span class="ew-pick__price">$34.00</span></li>${pickRow(38)}${pickRow(52)}</ul></div></div>`
+const sceneWrite = ({ build = false } = {}) => `<div class="ew-scene ew-scene--write${build ? ' ew-scene--build' : ''}" role="img" aria-label="${SCENE_ALT.write}"><div class="ew-scene__panel" aria-hidden="true"><span class="ew-write__top"><span class="ew-write__photo">${PHOTO_D}</span><span class="ew-write__head"><span class="ew-scene__label">Headline</span><span class="ew-write__h"></span><span class="ew-write__h" style="width:62%"></span><span class="ew-write__buy"></span></span></span><span class="ew-write__block"><span class="ew-scene__label">Benefits</span><span class="ew-scene__line"></span><span class="ew-scene__line" style="width:78%"></span></span><span class="ew-write__block"><span class="ew-scene__label">Why it stands out</span><span class="ew-write__four"><span></span><span></span><span></span><span></span></span></span><span class="ew-write__block"><span class="ew-scene__label">FAQ</span><span class="ew-write__q"><span class="ew-scene__line" style="width:70%"></span></span><span class="ew-write__q"><span class="ew-scene__line" style="width:56%"></span></span></span></div></div>`
+const sceneLive = () => `<div class="ew-scene ew-scene--live" role="img" aria-label="${SCENE_ALT.live}"><span class="ew-live__phone" aria-hidden="true"><span class="ew-live__screen"><span class="ew-live__img">${PHOTO_D}</span><span class="ew-live__t"></span><span class="ew-live__p"></span><span class="ew-live__buy"></span><span class="ew-live__l"></span><span class="ew-live__l" style="width:72%"></span></span></span><span class="ew-live__side" aria-hidden="true"><span class="ew-live__go">Go live</span><span class="ew-scene__panel ew-live__lib"><span class="ew-scene__label">Theme library</span><span class="ew-live__theme"><span class="ew-live__swatch"></span><span><b>Your current theme</b><span>Switch back any time</span></span></span></span></span></div>`
+const STEPS3 = [
+  ['01', 'Pick a product', 'Choose products from your Shopify catalog. Their photos and details are where the page starts.', scenePick()],
+  ['02', 'Ecomwerce writes the page', 'A headline, benefits, reasons it stands out and an FAQ, in English, in a new theme on your store. The app shows how long it takes before you start, and you can close it while it works.', sceneWrite({ build: true })],
+  ['03', 'Preview, then go live', 'See the page on your store first. It goes live only when you press Go live, and your current theme stays in your theme library.', sceneLive()],
+]
+// CostChart: the price facts once (docs/specs/billing.md BL-1); every bar on one scale, $0 to the top of an ad test
+const PRICE = { perPage: 3, freePages: 2, capPages: 20 }
+const SCALE = 350
+const share = (usd) => `${+(usd / SCALE * 100).toFixed(3)}%`
+const COST_ROWS = [['One product page', 1], ['A week at 3 products', 3], ['4 weeks at 3 products a week', 12], ['20 product pages, the monthly cap', PRICE.capPages]]
+const ADS = { low: 150, high: 350, label: 'Ads to test one product', value: 'about $150-350' }
+const costChart = () => `<div class="ew-cost"><div class="ew-cost__head"><h3 class="ew-heading-3">What testing costs</h3><p class="ew-small">After your ${PRICE.freePages} free product pages, each product you test is one product page at $${PRICE.perPage}.</p></div>
+<dl class="ew-cost__rows">${COST_ROWS.map(([label, pages]) => `<div class="ew-cost__row"><dt>${label}</dt><dd><span class="ew-cost__val">$${pages * PRICE.perPage}</span><span class="ew-cost__track" aria-hidden="true"><span class="ew-cost__bar" style="width:${share(pages * PRICE.perPage)}"></span></span></dd></div>`).join('')}<div class="ew-cost__row ew-cost__row--ads"><dt>${ADS.label}</dt><dd><span class="ew-cost__val">${ADS.value}</span><span class="ew-cost__track" aria-hidden="true"><span class="ew-cost__bar ew-cost__bar--ads" style="width:${share(ADS.low)}"></span><span class="ew-cost__bar ew-cost__bar--more" style="width:calc(${share(ADS.high - ADS.low)} - 2px)"></span></span></dd></div></dl>
+<div class="ew-cost__notes"><p class="ew-note">At the $${PRICE.capPages * PRICE.perPage} cap, building pauses until your next 30 days start.</p><p class="ew-note">Ads: what dropshippers report in Reddit posts from October 2025 to October 2026, a median of $50 a day for a median of 3 days, up to the $250-350 a much-upvoted post calls the most suggested test budget.</p></div></div>`
+const scopeList = () => `<div class="ew-honest ew-scope">
+  <div class="ew-honest__col ew-writes"><h3 class="ew-heading-3">Ecomwerce writes</h3><ul class="ew-scope__list"><li>The headline</li><li>Benefits</li><li>Reasons it stands out</li><li>An FAQ</li></ul><p class="ew-note">Written from your product’s photos and details, in English.</p><ul class="ew-scope__list ew-scope__more"><li>A new theme based on Horizon<span class="ew-scope__sub">Shopify’s free theme. You can edit the page in the theme editor.</span></li><li>AI images<span class="ew-scope__sub">Optional. You can switch them off before a build.</span></li></ul></div>
+  <div class="ew-honest__col ew-yours"><h3 class="ew-heading-3">Stays yours</h3><ul class="ew-scope__list"><li>Payments</li><li>Shipping</li><li>Policies</li><li>Your domain</li></ul><p class="ew-note">You set these up in your Shopify settings.</p><ul class="ew-scope__list ew-scope__more"><li>The moment you go live<span class="ew-scope__sub">Your live store changes only when you press Go live.</span></li></ul></div>
+</div>`
+
 const previews = {
   Logo: doc('<!-- @dsCard group="Brand" height=420 subtitle="The product card mark, the wordmark and the lockups" -->', 'Logo', `<div class="ew-col" style="gap:22px">
   <div class="ew-row" style="gap:28px;align-items:flex-end">${[120, 64, 40, 28].map(s => tileAt(ICON, s)).join('')}${tileAt(SMALL, 20)}${tileAt(SMALL, 16)}</div>
@@ -341,17 +474,13 @@ const previews = {
   </div>
   <div class="ew-stage ew-hero__stage">${card()}</div>
 </section>`),
-  Steps: doc('<!-- @dsCard group="Landing" height=260 width=1100 subtitle="How it works: three real steps, so the numbers mean order" -->', 'Steps', `<ol class="ew-steps">
-  <li class="ew-step"><span class="ew-step__n">01</span><h3 class="ew-h">Pick a product</h3><p class="ew-p">Choose a product from your Shopify catalog. Its photos and details are the starting point.</p></li>
-  <li class="ew-step"><span class="ew-step__n">02</span><h3 class="ew-h">Ecomwerce writes the page</h3><p class="ew-p">A headline, benefits, reasons it stands out and an FAQ, in a new theme on your store. About two minutes for one product.<sup>1</sup></p></li>
-  <li class="ew-step"><span class="ew-step__n">03</span><h3 class="ew-h">Preview, then go live</h3><p class="ew-p">See the page on your store first. It goes live only when you press Go live.</p></li>
-</ol>
-<p class="ew-note" style="margin-top:18px">1. One product, product page only: 4 of 5 builds on our test store finished within 1 min 57 s (October 2026).</p>`),
+  Steps: doc('<!-- @dsCard group="Landing" height=600 width=1200 subtitle="How it works: three real steps, each with a drawn scene on the orange stage; the middle one builds once" -->', 'Steps', `<ol class="ew-steps ew-steps--pictured">${STEPS3.map(([n, h, p, pic]) => `<li class="ew-step"><div class="ew-step__pic">${pic}</div><div class="ew-step__text"><span class="ew-step__n">${n}</span><h3 class="ew-h">${h}</h3><p class="ew-p">${p}</p></div></li>`).join('')}</ol>
+<p class="ew-note" style="margin-top:20px">The middle scene builds once: here on load, on the landing page when it comes into view. With reduced motion or without the script every scene is finished from the start. The scenes are drawn until the launch interface ships; then real crops replace them.</p>`),
   HonestyList: doc('<!-- @dsCard group="Landing" height=330 width=1000 subtitle="Real data only: what Ecomwerce never adds, and what stays yours" -->', 'Honesty list', `<div class="ew-honest">
   <div class="ew-honest__col ew-never"><h3 class="ew-h" style="font-size:24px">Never added by Ecomwerce</h3><ul>
     <li>${luc('x')}Invented reviews or star ratings</li><li>${luc('x')}Review counts and "people bought this" lines</li><li>${luc('x')}Stock bars and countdown timers</li><li>${luc('x')}"Verified" badges</li></ul></div>
   <div class="ew-honest__col ew-always"><h3 class="ew-h" style="font-size:24px">Always yours</h3><ul>
-    <li>${luc('check')}Your photos and product data</li><li>${luc('check')}Your real reviews, when you add them</li><li>${luc('check')}Your theme library, and your click to go live</li></ul></div>
+    <li>${luc('check')}Your photos and product data</li><li>${luc('check')}Your real reviews, when you add them</li></ul></div>
 </div>`),
   PricingCard: doc('<!-- @dsCard group="Landing" height=420 subtitle="Pay as you go: the same price sentence as the listing and the app" -->', 'Pricing card', `<div class="ew-price">
   <span class="ew-eyebrow">Pricing</span>
@@ -383,6 +512,8 @@ const previews = {
   FinalCall: doc('<!-- @dsCard group="Landing" height=400 width=1100 subtitle="The promise again on orange, one Install button, the official badge" -->', 'Final call', `<div class="ew-stage ew-final"><h2 class="ew-display-l">A product page for every product you test.</h2><div class="ew-final__actions"><a class="ew-btn ew-btn--on-orange ew-btn--lg" href="#">Install free</a><a class="ew-badge" href="#"><img src="${BADGE}" width="211" height="56" alt="Find it on the Shopify App Store"></a></div><p class="ew-small">${PRICE_LINE} Monthly cap of $60.</p></div>`),
   PageAnatomy: doc('<!-- @dsCard group="Landing" height=540 width=1100 subtitle="A real product page Ecomwerce built, with numbered labels on its parts" -->', 'Page anatomy', `<div style="display:grid;grid-template-columns:5fr 7fr;gap:24px;align-items:start"><ol class="ew-legend"><li><b>1</b><span>Headline and photos</span></li><li><b>2</b><span>Your price, variants and Add to cart, from the theme</span></li><li><b>3</b><span>Benefits</span></li><li><b>4</b><span>Why it stands out</span></li><li><b>5</b><span>FAQ</span></li></ol>
 <figure class="ew-anatomy"><div class="ew-anatomy__shot" aria-hidden="true"><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="ew-ph" style="aspect-ratio:1">placeholder · the real screenshot replaces it</div><div style="display:grid;gap:10px;align-content:start"><div class="ew-ph" style="height:56px">1 headline</div><div class="ew-ph" style="height:96px">2 price, variants, Add to cart</div></div></div><div class="ew-ph" style="height:72px">3 benefits</div><div class="ew-ph" style="height:72px">4 why it stands out</div><div class="ew-ph" style="height:60px">5 faq</div></div><figcaption class="ew-note" style="margin-top:12px">[Product] on our development store, built [date].</figcaption></figure></div>`),
+  CostChart: doc('<!-- @dsCard group="Landing" height=900 width=1100 subtitle="What testing costs: every dollar on one scale, our price next to one ad test" -->', 'Cost chart', `<div class="ew-row" style="align-items:flex-start;gap:24px"><div style="width:640px;max-width:100%">${costChart()}</div><div style="width:358px;max-width:100%">${costChart()}</div></div>`),
+  ScopeList: doc('<!-- @dsCard group="Landing" height=430 width=1000 subtitle="What Ecomwerce writes, and what stays yours" -->', 'Scope list', scopeList()),
   ListingImage: doc('<!-- @dsCard group="Listing" height=470 width=1200 subtitle="App Store feature image and screenshot frame, 1600 x 900, drawn at 0.36" -->', 'Listing image', `<div class="ew-frames">
   <div style="width:576px;height:324px"><div class="ew-frame" style="width:1600px;height:900px;transform:scale(.36);background:var(--orange);display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:0 110px;gap:60px;color:var(--ink-fixed)">
     <div style="display:flex;flex-direction:column;gap:28px"><span style="font:500 28px var(--font-mono);letter-spacing:.06em;text-transform:uppercase">Ecomwerce</span><h2 class="ew-h" style="font-size:96px;line-height:.98">Your product, as a page on your store</h2></div>
@@ -441,7 +572,7 @@ svg{position:absolute;inset:0}
 `
 
 await mkdir(DS + 'components', { recursive: true })
-await writeFile(DS + 'components/bundle.css', bundleCss + LANDING_CSS)
+await writeFile(DS + 'components/bundle.css', bundleCss + LANDING_CSS + PHASE3_CSS)
 for (const [n, html] of Object.entries(previews)) { await mkdir(DS + `components/${n}`, { recursive: true }); await writeFile(DS + `components/${n}/preview.html`, html) }
 await mkdir(DS + 'components/Cover', { recursive: true }); await writeFile(DS + 'components/Cover/preview.html', cover)
 console.log('logo files:', Object.keys(files).length + pngs.length, '| previews:', Object.keys(previews).length + 1, '| lockup viewBox width', lkW)

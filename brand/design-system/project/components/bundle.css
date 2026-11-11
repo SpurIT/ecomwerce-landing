@@ -171,3 +171,96 @@
 .ew-anatomy__shot{min-height:360px}
 }
 @media (max-width:360px){.ew-header__link{display:none}}
+/* Steps, pictured: a drawn scene above each step's text */
+.ew-steps--pictured{row-gap:48px}
+.ew-steps--pictured .ew-step{border-top:0;padding-top:0;gap:20px}
+.ew-step__pic{margin:0}
+.ew-step__text{display:flex;flex-direction:column;gap:10px;padding-top:16px;border-top:2px solid var(--text,#1A1410)}
+@media (min-width:721px) and (max-width:1099px){.ew-steps--pictured{grid-template-columns:1fr;row-gap:40px}.ew-steps--pictured .ew-step{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:32px;align-items:center}}
+/* the scenes: the orange stage at 4:3, white panels with fixed colours */
+.ew-scene{position:relative;display:block;aspect-ratio:4/3;container-type:inline-size;overflow:hidden;border-radius:var(--radius-l,24px);background:var(--orange,#FF6A13);color:#1A1410}
+:where(.ew-scene) span{display:block}
+.ew-scene__panel{position:absolute;background:#FFFFFF;border-radius:3.889cqi;box-shadow:var(--shadow-card,0 1px 2px rgba(26,20,16,.06),0 10px 30px -14px rgba(26,20,16,.22))}
+.ew-scene__label{font:500 3.056cqi/1.3 var(--font-mono,'Geist Mono',ui-monospace,monospace);letter-spacing:.06em;text-transform:uppercase;color:#736963;white-space:nowrap}
+.ew-scene__line{height:2.222cqi;border-radius:999px;background:#E9E2DB}
+.ew-scene .ew-photo{display:block;width:100%;height:100%}
+/* 01 pick: the catalog as a list, one product picked */
+.ew-scene--pick .ew-scene__panel{left:7.778cqi;right:7.778cqi;top:7.222cqi;bottom:7.222cqi;padding:3.889cqi;display:flex;flex-direction:column;gap:2.778cqi}
+.ew-pick{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1.667cqi}
+.ew-pick li{display:flex;align-items:center;gap:2.778cqi;height:10cqi;padding:0 2.222cqi;border-radius:2.778cqi}
+.ew-pick__box{flex:none;display:grid;place-items:center;width:4.444cqi;height:4.444cqi;border-radius:1.111cqi;box-shadow:inset 0 0 0 0.417cqi #8F857E}
+.ew-pick__box svg{width:78%;height:78%}
+.ew-pick__thumb{flex:none;width:7.222cqi;height:7.222cqi;border-radius:1.667cqi;overflow:hidden;background:#F3EEE8}
+.ew-pick .ew-scene__line{flex:none}
+.ew-pick__on{background:#FFEADB}
+.ew-pick__on .ew-pick__box{background:#1A1410;box-shadow:none;color:#FFFFFF}
+.ew-pick__name{flex:1 1 auto;min-width:0;font:600 3.611cqi/1.2 var(--font-sans,'Host Grotesk',system-ui,sans-serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ew-pick__price{flex:none;font:500 3.333cqi/1 var(--font-mono,'Geist Mono',ui-monospace,monospace)}
+/* 02 write: a product page that fills in; it runs past the stage's bottom edge */
+.ew-scene--write .ew-scene__panel{left:10cqi;right:10cqi;top:6.111cqi;bottom:-5.556cqi;padding:3.889cqi;display:flex;flex-direction:column;gap:2.778cqi}
+.ew-write__top{display:flex;gap:3.333cqi;align-items:flex-start}
+.ew-write__photo{flex:none;width:19.444cqi;aspect-ratio:1;border-radius:2.5cqi;overflow:hidden;background:#F3EEE8}
+.ew-write__head{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1.667cqi}
+.ew-write__h{height:2.222cqi;border-radius:999px;background:#1A1410}
+.ew-write__buy{height:5cqi;width:52%;margin-top:1.667cqi;border-radius:999px;background:#1A1410}
+.ew-write__block{display:flex;flex-direction:column;gap:1.389cqi}
+.ew-write__four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.667cqi}
+.ew-write__four span{height:5.556cqi;border-radius:1.667cqi;background:#FFEADB}
+.ew-write__q{display:flex;align-items:center;justify-content:space-between;gap:2.222cqi;height:3.333cqi}
+.ew-write__q::after{content:"+";font:400 3.333cqi/1 var(--font-mono,'Geist Mono',ui-monospace,monospace);color:#736963}
+/* the build: the photo fills, the headline writes in, the buy pill appears, then benefits, reasons and the faq, once,
+   about 1.8 s. armed (the landing's script, while the scene is below the viewport) holds the first frame */
+.ew-scene--build .ew-write__photo .ew-photo{animation:ew-fill .55s cubic-bezier(.2,.7,.2,1) .1s both}
+.ew-scene--build .ew-write__head .ew-scene__label{animation:ew-in .3s ease-out .35s both}
+.ew-scene--build .ew-write__h{animation:ew-write .45s steps(14,end) .45s both}
+.ew-scene--build .ew-write__h+.ew-write__h{animation-delay:.62s}
+.ew-scene--build .ew-write__buy{animation:ew-buy .3s ease-out .85s both}
+.ew-scene--build .ew-write__block{animation:ew-in .35s ease-out 1s both}
+.ew-scene--build .ew-write__block+.ew-write__block{animation-delay:1.2s}
+.ew-scene--build .ew-write__block+.ew-write__block+.ew-write__block{animation-delay:1.4s}
+.ew-scene--armed,.ew-scene--armed *{animation-play-state:paused!important}
+@media (prefers-reduced-motion:reduce){.ew-scene--build,.ew-scene--build *{animation:none!important}}
+/* 03 live: the page on a phone, Go live, the current theme kept in the theme library */
+.ew-live__phone{position:absolute;left:9.444cqi;top:6.111cqi;width:32.778cqi;height:65.556cqi;padding:1.667cqi;border-radius:6.111cqi;background:#1A1410;box-shadow:var(--shadow-card,0 1px 2px rgba(26,20,16,.06),0 10px 30px -14px rgba(26,20,16,.22))}
+.ew-live__screen{height:100%;padding:2.222cqi;border-radius:4.722cqi;overflow:hidden;background:#FFFFFF;display:flex;flex-direction:column;gap:1.944cqi}
+.ew-live__img{aspect-ratio:1;border-radius:2.222cqi;overflow:hidden;background:#F3EEE8}
+.ew-live__t{height:2.222cqi;width:80%;border-radius:999px;background:#1A1410}
+.ew-live__p{height:1.667cqi;width:40%;border-radius:999px;background:#E9E2DB}
+.ew-live__buy{height:4.444cqi;border-radius:999px;background:#1A1410}
+.ew-live__l{height:1.667cqi;border-radius:999px;background:#E9E2DB}
+.ew-live__side{position:absolute;left:46.667cqi;right:5.556cqi;top:18.333cqi;display:flex;flex-direction:column;gap:3.889cqi}
+.ew-live__go{display:flex;align-items:center;justify-content:center;height:10cqi;border-radius:999px;background:#1A1410;color:#FFFFFF;font:600 3.889cqi/1 var(--font-sans,'Host Grotesk',system-ui,sans-serif)}
+.ew-scene .ew-live__lib{position:static;padding:3.333cqi;display:flex;flex-direction:column;gap:2.222cqi}
+.ew-live__theme{display:flex;align-items:center;gap:2.5cqi}
+.ew-live__swatch{flex:none;width:6.667cqi;height:6.667cqi;border-radius:1.667cqi;background:#FFEADB;box-shadow:inset 0 0 0 0.278cqi #E9E2DB}
+.ew-live__theme b{display:block;font:600 3.472cqi/1.2 var(--font-sans,'Host Grotesk',system-ui,sans-serif);color:#1A1410}
+.ew-live__theme span span{font:400 3.056cqi/1.3 var(--font-sans,'Host Grotesk',system-ui,sans-serif);color:#5E554F}
+/* CostChart: every dollar on one scale, $0 to the top of an ad test; our bars orange, the ad test neutral; each bar
+   labelled, no hover, no motion, so it reads the same without the script */
+.ew-cost{--ew-cost-ours:var(--orange-text,#C2410C);display:flex;flex-direction:column;gap:20px;padding:28px;border:1px solid var(--line,#E7E1DB);border-radius:var(--radius-l,24px);background:var(--surface,#FFFFFF)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ew-cost{--ew-cost-ours:var(--orange,#FF6A13)}}
+:root[data-theme="dark"] .ew-cost{--ew-cost-ours:var(--orange,#FF6A13)}
+.ew-cost__head{display:flex;flex-direction:column;gap:8px}
+.ew-cost__rows{margin:0;display:flex;flex-direction:column;gap:16px}
+.ew-cost__row{position:relative}
+.ew-cost__row dt{padding-right:4.5em;font-size:var(--text-small,15px);line-height:1.4;color:var(--text,#1A1410)}
+.ew-cost__row dd{margin:0}
+.ew-cost__val{position:absolute;top:0;right:0;font:500 15px/1.4 var(--font-mono,'Geist Mono',ui-monospace,monospace);font-variant-numeric:tabular-nums;color:var(--text,#1A1410);white-space:nowrap}
+.ew-cost__track{display:flex;gap:2px;height:12px;margin-top:6px;border-radius:0 4px 4px 0;background:var(--surface-2,#F5F3F0)}
+.ew-cost__bar{flex:none;display:block;height:100%;min-width:3px;border-radius:0 4px 4px 0;background:var(--ew-cost-ours)}
+.ew-cost__bar--ads{background:var(--control-border,#8F857E);border-radius:0}
+.ew-cost__bar--more{background:repeating-linear-gradient(135deg,var(--control-border,#8F857E) 0 2px,transparent 2px 6px)}
+.ew-cost__row--ads{padding-top:16px;border-top:1px solid var(--line,#E7E1DB)}
+.ew-cost__row--ads dt{padding-right:8.5em}
+.ew-cost__row--ads .ew-cost__val{top:16px}
+.ew-cost__notes{display:flex;flex-direction:column;gap:8px}
+/* ScopeList: what Ecomwerce writes and what stays yours, on HonestyList's two panels */
+.ew-scope .ew-honest__col{gap:16px}
+.ew-writes{--ew-scope-dot:var(--orange-text,#C2410C)}
+.ew-yours{--ew-scope-dot:var(--text,#1A1410)}
+.ew-scope .ew-scope__list{gap:10px}
+.ew-scope .ew-scope__list li{display:block;position:relative;padding-left:20px;line-height:1.45;color:var(--text,#1A1410)}
+.ew-scope__list li::before{content:"";position:absolute;left:1px;top:.5em;width:8px;height:8px;border-radius:999px;background:var(--ew-scope-dot)}
+.ew-scope__sub{display:block;margin-top:2px;font-size:var(--text-small,15px);line-height:1.5;color:var(--text-2,#5E554F)}
+.ew-scope .ew-scope__more{padding-top:16px;border-top:1px solid var(--line,#E7E1DB)}
+@media (max-width:720px){.ew-cost{padding:20px}}

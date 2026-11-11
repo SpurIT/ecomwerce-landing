@@ -1,0 +1,8 @@
+What testing costs: the price per product page as a week and a month of testing, next to what one ad test costs, on one dollar scale.
+
+- Markup: `.ew-cost` (a `surface` panel with a hairline) holding `.ew-cost__head` (a `heading-3` and a `text-small` line), `dl.ew-cost__rows` of `.ew-cost__row` (the label in `dt`; in `dd` the amount `.ew-cost__val` and the bar, `.ew-cost__track` with `.ew-cost__bar`, `aria-hidden`), then `.ew-cost__notes`.
+- Every bar sits on one scale, from $0 to the top of the ad test ($350): two scales for one measure would mislead. A bar's width is its amount over the scale, and a bar is at least 3px wide, so $3 still shows.
+- The figures come from docs/specs/billing.md (BL-1): $3 per product page; the first 2 free for the life of the shop, said once in the head; the $60 cap is 20 paid pages in 30 days, and building pauses at it, so never write "20 or more". Compute the rows from those facts; never type an amount by hand.
+- Our bars are `orange-text` in light and `orange` in dark; the ad test is `control-border`, solid to its low end and hatched to its high end. Amounts are text in `text`, never in a bar's colour.
+- The ad test is market data, not ours: it shows only with its source line under the chart (who reported it, where, the period, how the range is made).
+- No conversion, revenue or savings lines. No hover and no motion: every bar carries its amount, so the chart reads the same without the script and as a list to a screen reader.
