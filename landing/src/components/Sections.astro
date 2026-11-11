@@ -1,50 +1,24 @@
 ---
-// How it works (HowItWorks, g4), what's on the page (g3), real data only (g2), what Ecomwerce writes and what stays
-// yours (Scope), pricing with what testing costs (CostChart) and the faq (g2, g4), in the order of 3-landing-page.md.
-// A closed gate's part is not in the html; its launch line is (copy.md, gates). Scope is not gated and carries the
-// go-live line, so the honesty list's "Always yours" keeps two lines (copy.md, real data only).
+// The sections below the hero, in the order of 3-landing-page.md (phase 4): what you get (Anatomy, which takes in g3's
+// sample), how it works (HowItWorks, g4), real data only (g2), pricing with what testing costs (CostChart), the
+// comparison (Compare) and the faq (g2, g4). A closed gate's part is not in the html; its launch line is (copy.md,
+// gates). The scope block left the page in phase 4: its facts live in the faq, and "Always yours" keeps two lines
+// (the go-live fact is in step 3 and in "Will it change my live store?").
+import Anatomy from './Anatomy.astro';
+import Compare from './Compare.astro';
 import CostChart from './CostChart.astro';
 import HowItWorks from './HowItWorks.astro';
 import Icon from './Icon.astro';
-import Scope from './Scope.astro';
-import { SAMPLE } from '../data/landing.mjs';
 import { installHref, isOpen } from '../lib/site.mjs';
 
 interface Props { campaign: string }
 const { campaign } = Astro.props;
 const time = isOpen('g4');
-const sample = isOpen('g3');
 const honest = isOpen('g2');
-if (sample && !(SAMPLE.screenshot && SAMPLE.product && SAMPLE.built)) {
-  throw new Error('g3 is open, but SAMPLE.screenshot, product or built in src/data/landing.mjs is empty: the section shows a real build only');
-}
 ---
-<HowItWorks />
+<Anatomy />
 
-{sample && (
-<section class="lp-section" id="sample" aria-labelledby="sample-title">
-  <div class="lp-wrap lp-cols">
-    <div class="lp-span-5">
-      <div class="lp-head">
-        <span class="ew-eyebrow">What’s on the page</span>
-        <h2 class="ew-display-l" id="sample-title">A real page, built by Ecomwerce</h2>
-        <p class="ew-lead">Built on our development store from one catalog product and its real photos.</p>
-      </div>
-      <ol class="ew-legend">
-        <li><b>1</b><span>Headline and photos</span></li>
-        <li><b>2</b><span>Your price, variants and Add to cart, from the theme</span></li>
-        <li><b>3</b><span>Benefits</span></li>
-        <li><b>4</b><span>Why it stands out</span></li>
-        <li><b>5</b><span>FAQ</span></li>
-      </ol>
-    </div>
-    <figure class="lp-span-7 ew-anatomy">
-      <img class="lp-anatomy__img" src={SAMPLE.screenshot.src} width={SAMPLE.screenshot.width} height={SAMPLE.screenshot.height} alt={SAMPLE.screenshot.alt} loading="lazy">
-      <figcaption class="ew-note" style="margin-top:12px">{SAMPLE.product} on our development store, built {SAMPLE.built}.</figcaption>
-    </figure>
-  </div>
-</section>
-)}
+<HowItWorks />
 
 {honest && (
 <section class="lp-section" id="honest" aria-labelledby="honest-title">
@@ -70,13 +44,11 @@ if (sample && !(SAMPLE.screenshot && SAMPLE.product && SAMPLE.built)) {
 </section>
 )}
 
-<Scope />
-
 <section class="lp-section lp-pricing" id="pricing" aria-labelledby="pricing-title">
   <div class="lp-wrap">
     <div class="lp-head">
       <span class="ew-eyebrow">Pricing</span>
-      <h2 class="ew-display-l" id="pricing-title">Pay per product page</h2>
+      <h2 class="ew-display-l" id="pricing-title">The page is the cheapest part of your test</h2>
       <p class="ew-lead">Free to install. Your first 2 product pages are free, then $3 per product page.</p>
     </div>
     <div class="lp-cols lp-pricing__cols">
@@ -106,6 +78,8 @@ if (sample && !(SAMPLE.screenshot && SAMPLE.product && SAMPLE.built)) {
   </div>
 </section>
 
+<Compare />
+
 <section class="lp-section lp-faq" id="faq" aria-labelledby="faq-title">
   <div class="lp-wrap lp-cols">
     <div class="lp-span-4"><div class="lp-head"><span class="ew-eyebrow">FAQ</span><h2 class="ew-display-l" id="faq-title">Questions before you install</h2></div></div>
@@ -113,9 +87,11 @@ if (sample && !(SAMPLE.screenshot && SAMPLE.product && SAMPLE.built)) {
       <div class="ew-faq">
         <details open><summary>Will it change my live store?</summary><p>Not until you press Go live. Ecomwerce builds the page in a new theme on your store, based on Horizon, Shopify’s free theme, and you preview it first. When you go live, that theme becomes your live theme and your current one moves to your theme library, so you can switch back.</p></details>
         <details><summary>Do I need a Shopify store?</summary><p>Yes. Ecomwerce picks products from your Shopify catalog, so it needs your store with your product in it. No store yet? Press Install, then create your Shopify account and store when Shopify asks. No product yet? Add it by hand or with your supplier app, then pick it in Ecomwerce.</p></details>
-        <details><summary>What does Ecomwerce write?</summary><p>The product page: a headline, benefits, reasons it stands out and an FAQ, from your product’s photos and details. It can add AI images too, which you can switch off before a build. You can edit the page in the Shopify theme editor.</p></details>
+        <details><summary>Does it work on Shopify’s $1 plan?</summary><p>Yes. Your first 2 product pages are free, so you can build them while you pay Shopify $1 a month. After that, each product page is $3, billed on your Shopify invoice next to your plan.</p></details>
+        <details><summary>Can I edit the page?</summary><p>Yes. Open it in the Shopify theme editor and change it like any page of your theme, before or after you go live.</p></details>
+        <details><summary>What if I don’t like the page?</summary><p>Don’t go live, and your live store stays as it is. Change the page in the theme editor, or build it again: a new build is one more product page, $3 once your 2 free pages are used.</p></details>
         <details><summary>What does it cost?</summary><p>Free to install. Your first 2 product pages are free, then $3 per product page. Monthly cap of $60. Failed builds are never charged, and you pay on your Shopify invoice.</p></details>
-        <details><summary>How long does a page take?</summary><p>The app shows an estimate before you start, and you can close it while the page is built.{time && ' On our test store, 4 of 5 one-product builds finished within 1 min 57 s (October 2026).'}</p></details>
+        <details><summary>How long does a page take?</summary><p>Minutes. The app shows its estimate before you start, and you can close it while the page is built.{time && ' On our test store, 4 of 5 one-product builds finished within 1 min 57 s (October 2026).'}</p></details>
         <details><summary>Which languages does it write in?</summary><p>English for now.</p></details>
         <details><summary>Is my store ready to sell after this?</summary><p>Not by itself. Ecomwerce writes the product page. Payments, shipping, policies and your domain stay in your Shopify settings.</p></details>
         <details><summary>What happens if I uninstall?</summary><p>The pages are built with Ecomwerce blocks, so their content disappears from your store when you uninstall. The app says so before you go live.</p></details>

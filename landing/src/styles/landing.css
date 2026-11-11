@@ -48,6 +48,10 @@ a{color:inherit}
 .lp-span-4{grid-column:span 4}.lp-span-5{grid-column:span 5}.lp-span-6{grid-column:span 6}.lp-span-7{grid-column:span 7}.lp-span-8{grid-column:span 8}
 .lp-footnote{margin-top:24px}
 .lp-anatomy__img{display:block;width:100%;height:auto;border-radius:10px}
+/* what you get (phase 4): the legend beside a drawing of at most 440px; stacked on phones (lp-cols) */
+.lp-anatomy{gap:24px 56px;align-items:center}
+.lp-anatomy__fig{width:100%;max-width:440px;justify-self:end}
+@media (max-width:720px){.lp-anatomy__fig{justify-self:start}}
 .lp-pricing .ew-price{max-width:none}
 /* pricing (phase 3): the head over two columns, what testing costs (CostChart) in 7, the card and how billing works
    in 5; on tablets the chart spans the row and the card sits beside the notes (5 columns there would wrap the card) */

@@ -28,9 +28,9 @@ const label = real
         <h1 class="ew-display-xl" id="hero-title">{headline}</h1>
         <p class="ew-lead">{variant.lead}</p>
         <div class="lp-hero__actions">
-          <a class="ew-btn ew-btn--lg" data-install="hero" href={installHref(campaign, 'hero')}>Install free</a>
+          <a class="ew-btn ew-btn--lg" data-install="hero" href={installHref(campaign, 'hero')}>Build my first page free</a>
           {real
-            ? <a class="ew-btn ew-btn--secondary ew-btn--lg" href="#sample">See a sample page</a>
+            ? <a class="ew-btn ew-btn--secondary ew-btn--lg" href="#anatomy">See a sample page</a>
             : <a class="ew-textlink" href="#how">How it works</a>}
         </div>
         {noStoreFirst && <NoStore campaign={campaign} placement="no-store-hero" />}

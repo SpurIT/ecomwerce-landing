@@ -1,11 +1,12 @@
 ---
 // CostChart (brand book; copy.md, pricing; DECISIONS.md 2026-11-11): what testing costs, every bar on one dollar scale
-// from $0 to the top of an ad test, so a page, a week, four weeks and the cap sit next to one ad test. The price facts
-// live here once (docs/specs/billing.md BL-1); every amount and bar width below is computed from them, none typed. The
-// cap stops building at 20 paid pages a cycle, so the chart never says "20 or more". The ad test is market data (the
-// personas, "p1 and p2 in numbers"; market posts x0.5) and shows only with its source line. No hover and no motion:
-// each bar carries its amount, so the chart reads the same without the script and as a list to a screen reader.
-const PRICE = { perPage: 3, freePages: 2, capPages: 20 };
+// from $0 to the top of an ad test, the ad test first (an anchor, phase 4), then a page, a week, four weeks and the
+// cap. The price facts are PRICE in src/data/landing.mjs (docs/specs/billing.md BL-1); every amount and bar width below
+// is computed from them, none typed. The cap stops building at 20 paid pages a cycle, so the chart never says "20 or
+// more". The ad test is market data (the personas, "p1 and p2 in numbers"; market posts x0.5) and shows only with its
+// source line. No hover and no motion: each bar carries its amount, so the chart reads the same without the script.
+import { PRICE } from '../data/landing.mjs';
+
 const SCALE = 350;
 const WEEK = 3; // products tested a week (personas, p2: "about 3 products a week"; market posts x0.5)
 const ADS = { low: 150, high: 350 };
@@ -21,10 +22,10 @@ const rows: [string, number][] = [
 <div class="ew-cost">
   <div class="ew-cost__head"><h3 class="ew-heading-3">What testing costs</h3><p class="ew-small">After your {PRICE.freePages} free product pages, each product you test is one product page at {usd(PRICE.perPage)}.</p></div>
   <dl class="ew-cost__rows">
+    <div class="ew-cost__row ew-cost__row--ads"><dt>Ads to test one product</dt><dd><span class="ew-cost__val">about {usd(ADS.low)}-{ADS.high}</span><span class="ew-cost__track" aria-hidden="true"><span class="ew-cost__bar ew-cost__bar--ads" style={`width:${share(ADS.low)}`}></span><span class="ew-cost__bar ew-cost__bar--more" style={`width:calc(${share(ADS.high - ADS.low)} - 2px)`}></span></span></dd></div>
     {rows.map(([label, pages]) => (
       <div class="ew-cost__row"><dt>{label}</dt><dd><span class="ew-cost__val">{usd(pages * PRICE.perPage)}</span><span class="ew-cost__track" aria-hidden="true"><span class="ew-cost__bar" style={`width:${share(pages * PRICE.perPage)}`}></span></span></dd></div>
     ))}
-    <div class="ew-cost__row ew-cost__row--ads"><dt>Ads to test one product</dt><dd><span class="ew-cost__val">about {usd(ADS.low)}-{ADS.high}</span><span class="ew-cost__track" aria-hidden="true"><span class="ew-cost__bar ew-cost__bar--ads" style={`width:${share(ADS.low)}`}></span><span class="ew-cost__bar ew-cost__bar--more" style={`width:calc(${share(ADS.high - ADS.low)} - 2px)`}></span></span></dd></div>
   </dl>
   <div class="ew-cost__notes">
     <p class="ew-note">At the {usd(PRICE.capPages * PRICE.perPage)} cap, building pauses until your next 30 days start.</p>

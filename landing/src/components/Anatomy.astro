@@ -1,0 +1,45 @@
+---
+// What you get (brand book PageAnatomy; 3-landing-page.md section 3; copy.md, what you get; DECISIONS.md 2026-11-11):
+// the six parts Ecomwerce writes, each with what it does on the page, beside a drawn page with the same numbers, right
+// under the hero. The legend's and the drawing's markup is the brand generators' (anatomyLegend, anatomyDrawn in
+// brand/tools/build-brand.mjs), copied: change it there first; the audit compares them. When g3 opens, the real
+// screenshot and its caption replace the drawing in this block and the hero's "See a sample page" points here.
+import { SAMPLE } from '../data/landing.mjs';
+import { isOpen } from '../lib/site.mjs';
+
+const real = isOpen('g3');
+if (real && !(SAMPLE.screenshot && SAMPLE.product && SAMPLE.built)) {
+  throw new Error('g3 is open, but SAMPLE.screenshot, product or built in src/data/landing.mjs is empty: the section shows a real build only');
+}
+// the hero's placeholder product (never a real brand's product), hidden from assistive technology inside the scene
+const PHOTO = '<svg class="ew-photo" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><rect width="400" height="400" fill="#F3EEE8"/><ellipse cx="200" cy="322" rx="122" ry="13" fill="#E4DBD1"/><path d="M118 128h164l-48 98h-68z" fill="#E7DCD1"/><rect x="140" y="216" width="120" height="14" rx="7" fill="#D7CBBF"/><path d="M128 238h144v46a40 40 0 0 1-40 40h-64a40 40 0 0 1-40-40z" fill="#FFFFFF" stroke="#D7CBBF" stroke-width="3"/><path d="M272 252h14a22 22 0 0 1 0 44h-10" fill="none" stroke="#D7CBBF" stroke-width="9"/></svg>';
+const ALT = 'Illustration: a product page with six numbered parts: a headline beside the photo, the price with variants and Add to cart, benefits, four reasons it stands out beside an image, and an FAQ.';
+const LEGEND6 = [
+  ['A hook headline', 'The first thing a visitor from your ad reads: what the product does for them.'],
+  ['Your price, variants and Add to cart', 'Horizon’s own buy buttons, so the cart and checkout are Shopify’s.'],
+  ['Benefits', 'What the buyer gets, in short lines they can scan.'],
+  ['Four reasons it stands out', 'Why this product, set beside an image.'],
+  ['AI images, if you want them', 'On by default. You can switch them off before a build.'],
+  ['An FAQ', 'Up to 5 answers to the questions that hold a buyer back.'],
+];
+const legend = `<ol class="ew-legend ew-legend--described">${LEGEND6.map(([t, d], i) => `<li><b>${i + 1}</b><span><span class="ew-legend__t">${t}</span><span class="ew-legend__d">${d}</span></span></li>`).join('')}</ol>`;
+const mark = (n: number) => `<span class="ew-mark">${n}</span>`;
+const drawn = `<figure class="ew-anatomy--drawn"><div class="ew-scene ew-scene--anatomy" role="img" aria-label="${ALT}"><div class="ew-scene__panel" aria-hidden="true"><span class="ew-an__top"><span class="ew-an__photo">${PHOTO}</span><span class="ew-an__info"><span class="ew-an__part">${mark(1)}<span class="ew-write__h"></span><span class="ew-write__h" style="width:62%"></span></span><span class="ew-an__part">${mark(2)}<span class="ew-an__price"></span><span class="ew-an__chips"><span></span><span></span><span></span></span><span class="ew-an__buy"></span></span></span></span><span class="ew-an__part">${mark(3)}<span class="ew-scene__label">Benefits</span><span class="ew-an__ben"><span class="ew-scene__line"></span><span class="ew-scene__line" style="width:84%"></span><span class="ew-scene__line" style="width:70%"></span></span></span><span class="ew-an__part">${mark(4)}<span class="ew-scene__label">Why it stands out</span><span class="ew-an__why"><span class="ew-an__img">${mark(5)}${PHOTO}</span><span class="ew-an__four"><span></span><span></span><span></span><span></span></span></span></span><span class="ew-an__part">${mark(6)}<span class="ew-scene__label">FAQ</span><span class="ew-write__q"><span class="ew-scene__line" style="width:70%"></span></span><span class="ew-write__q"><span class="ew-scene__line" style="width:56%"></span></span><span class="ew-write__q"><span class="ew-scene__line" style="width:62%"></span></span></span></div></div></figure>`;
+---
+<section class="lp-section" id="anatomy" aria-labelledby="anatomy-title">
+  <div class="lp-wrap">
+    <div class="lp-head">
+      <span class="ew-eyebrow">What you get</span>
+      <h2 class="ew-display-l" id="anatomy-title">Built like the product pages the courses teach</h2>
+      <p class="ew-lead">A theme’s own product page starts with photos, a price and a button. Ecomwerce adds the sections a product page needs to sell, written from your product’s photos and details.</p>
+    </div>
+    <div class="lp-cols lp-anatomy">
+      <div class="lp-span-7" set:html={legend} />
+      <div class="lp-span-5 lp-anatomy__fig">
+        {real
+          ? <figure class="ew-anatomy"><img class="lp-anatomy__img" src={SAMPLE.screenshot.src} width={SAMPLE.screenshot.width} height={SAMPLE.screenshot.height} alt={SAMPLE.screenshot.alt} loading="lazy"><figcaption class="ew-note" style="margin-top:12px">A real page, built by Ecomwerce: {SAMPLE.product} on our development store, built {SAMPLE.built}.</figcaption></figure>
+          : <Fragment set:html={drawn} />}
+      </div>
+    </div>
+  </div>
+</section>

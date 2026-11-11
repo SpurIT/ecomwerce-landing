@@ -7,7 +7,8 @@
 // 3. screenshots into .check/shots/ with console errors and horizontal scroll: each variant and its opt-in copy at
 //    1440 and 390, first screens at 390 x 844 (where phase 2 left them), no javascript, reduced motion, dark, in-app
 //    browsers, legal, 404, 768
-// 3b. phase 3 (blocks): per-section frames of how it works, the scope block and pricing (.check/shots/p3-*.jpg), the
+// 3b. phases 3 and 4 (blocks): per-section frames of what you get, how it works, pricing and the comparison
+//    (.check/shots/p3-*.jpg, p4-*.jpg), the
 //    bars to scale, step 2's build (finished without the script and with reduced motion; armed below the fold, once in
 //    view, no replay), the orange share of the page, the stacking with g2, and how it works in WebKit
 // 4. real clicks: Install links and utm, consent flows, "Privacy choices", Global Privacy Control, the faq, the keyboard
@@ -24,6 +25,7 @@ import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { startServer } from './serve.mjs';
 import { LISTING_URL, SITE, VARIANTS } from '../src/data/landing.mjs';
+import { DOLLARS as CMP_DOLLARS } from '../src/data/competitors.mjs';
 
 const HERE = new URL('..', import.meta.url).pathname;
 const CHECK = HERE + '.check/';
@@ -47,12 +49,15 @@ const GATED = {
 const TAG_HOSTS = /googletagmanager\.com|connect\.facebook\.net|analytics\.tiktok\.com/;
 const listing = new URL(LISTING_URL);
 // every dollar amount the page may show: the price and the chart (BL-1), the ad test's sourced figures, the placeholder
-// product's price (TASK.md phase 3 RESEARCH)
-const DOLLARS = new Set(['$3', '$9', '$36', '$60', '$150', '$250', '$50', '$34.00']);
-// the order of the sections below the hero (3-landing-page.md); a closed gate's section is absent
-const ORDER = ['how', 'sample', 'honest', 'scope', 'pricing', 'faq'];
-// the card's top and bottom at 390 x 844 where phase 2 left them (TASK.md phase 2 VERIFY): phase 3 adds nothing above it
-const FOLD_P2 = { default: '545-689', first: '616-760', builder: '616-760' };
+// product's price (TASK.md phase 3 RESEARCH), the comparison's prices from its one source and Shopify's $1 offer that the
+// faq names (phase 4: the operator's fact, $1 a month for 3 months)
+const DOLLARS = new Set(['$3', '$9', '$36', '$60', '$150', '$250', '$50', '$34.00', '$1', ...CMP_DOLLARS]);
+// the order of the sections below the hero (3-landing-page.md, phase 4); a closed gate's section is absent
+const ORDER = ['anatomy', 'how', 'honest', 'pricing', 'compare', 'faq'];
+const REQUIRED = ['anatomy', 'how', 'pricing', 'compare', 'faq'];
+// the card's top and bottom at 390 x 844 where phase 4 left them (TASK.md phase 4 VERIFY): the new headlines and leads
+// moved it (phase 2 left 545-689, 616-760, 616-760); the first screen still holds the headline, Install and the card
+const FOLD_P2 = { default: '589-733', first: '589-733', builder: '660-804' };
 
 // ---------- 1. extra builds ----------
 const build = (env, out) => spawnSync('npx', ['astro', 'build'], { cwd: HERE, env: { ...process.env, ...env, OUT_DIR: out }, encoding: 'utf8' });
@@ -105,9 +110,9 @@ if (step('audit')) {
       const caps = text.split('Monthly cap of $60').length - 1;
       if (prices < 4 || caps < 4) problems.push(`price sentence ${prices}x, cap ${caps}x`);
       const order = [...html.matchAll(/<section class="lp-section[^"]*" id="([a-z]+)"/g)].map((m) => m[1]);
-      if (order.join() !== ORDER.filter((id) => order.includes(id)).join() || !['how', 'scope', 'pricing'].every((id) => order.includes(id))) problems.push(`sections ${order.join(', ')}`);
+      if (order.join() !== ORDER.filter((id) => order.includes(id)).join() || !REQUIRED.every((id) => order.includes(id))) problems.push(`sections ${order.join(', ')}`);
     }
-    const dollars = [...new Set(text.match(/\$\d[\d,]*(?:\.\d+)?/g) || [])].filter((d) => !DOLLARS.has(d));
+    const dollars = [...new Set(text.match(/\$\d+(?:,\d{3})*(?:\.\d+)?/g) || [])].filter((d) => !DOLLARS.has(d));
     if (dollars.length) problems.push(`dollar amounts ${dollars.join(', ')}`);
     check(`audit ${rel}`, !problems.length, problems.join('; '));
   }
@@ -120,20 +125,34 @@ if (step('audit')) {
   const at = [...pageSteps].findIndex((c, i) => c !== brandSteps[i]);
   check('how it works: the steps and scenes are the brand book\'s Steps markup (brand/tools/build-brand.mjs)', brandSteps.length > 0 && brandSteps === pageSteps,
     brandSteps === pageSteps ? `${pageSteps.length} characters` : `differs at ${at}: ${pageSteps.slice(Math.max(0, at), at + 60)} | ${brandSteps.slice(Math.max(0, at), at + 60)}`);
+  // phase 4: the anatomy's legend and drawing and the comparison table are the brand book's markup too
+  const brandDir = HERE + '../brand/design-system/project/components/';
+  const home = readFileSync(dist + 'index.html', 'utf8');
+  for (const [what, file, re] of [
+    ['what you get: the legend', 'PageAnatomy', /<ol class="ew-legend ew-legend--described">[\s\S]*?<\/ol>/],
+    ['what you get: the drawing', 'PageAnatomy', /<figure class="ew-anatomy--drawn">[\s\S]*?<\/figure>/],
+    ['the comparison table', 'ComparisonTable', /<div class="ew-compare">[\s\S]*?<\/div>/],
+  ]) {
+    const b = flat((readFileSync(brandDir + file + '/preview.html', 'utf8').match(re) || [''])[0]);
+    const pg = flat((home.match(re) || [''])[0]);
+    const i = [...pg].findIndex((c, k) => c !== b[k]);
+    check(`${what}: the brand book's ${file} markup (brand/tools/build-brand.mjs)`, b.length > 0 && b === pg, b === pg ? `${pg.length} characters` : `differs at ${i}: ${pg.slice(Math.max(0, i), i + 60)} | ${b.slice(Math.max(0, i), i + 60)}`);
+  }
   const js = readdirSync(dist + '_astro').filter((f) => f.endsWith('.js'));
   const bytes = js.reduce((n, f) => n + statSync(dist + '_astro/' + f).size, 0);
   const gz = js.reduce((n, f) => n + gzipSync(readFileSync(dist + '_astro/' + f)).length, 0);
   check('page script under 50 KB before the ad tags', bytes < 50 * 1024, `${js.length} file, ${bytes} bytes, ${gz} gzipped`);
-  const home = readFileSync(dist + 'index.html');
-  check('home page html', true, `${home.length} bytes, ${gzipSync(home).length} gzipped, css inlined`);
+  const homeBytes = readFileSync(dist + 'index.html');
+  check('home page html', true, `${homeBytes.length} bytes, ${gzipSync(homeBytes).length} gzipped, css inlined`);
   const open = readFileSync(CHECK + 'dist-gates/index.html', 'utf8');
   const openHits = ['g1', 'g2', 'g4'].map((g) => [g, GATED[g].filter((r) => r.test(open)).length, GATED[g].length]);
   check('gates-open build carries the target lines of g1, g2 and g4', openHits.every(([, n]) => n > 0), openHits.map(([g, n, of]) => `${g} ${n}/${of}`).join(', '));
-  // phase 3: with g2 open the honesty section and the scope block stack, and the go-live line lives in the scope block
+  // phase 4: with g2 open real data only sits between how it works and pricing; the scope block is gone, and "Always
+  // yours" keeps two lines (the go-live fact is in step 3 and the faq)
   const order = [...open.matchAll(/<section class="lp-section[^"]*" id="([a-z]+)"/g)].map((m) => m[1]);
   const always = (open.match(/ew-always"[\s\S]*?<\/ul>/) || [''])[0].split('<li').length - 1;
-  check('gates-open build: real data only, then the scope block, then pricing; "Always yours" has two lines and no go-live line',
-    order.join() === 'how,honest,scope,pricing,faq' && always === 2 && !/click to go live/i.test(open) && /The moment you go live/.test(open), `${order.join(', ')}; always yours ${always}`);
+  check('gates-open build: what you get, how it works, real data only, pricing, the comparison, the faq; "Always yours" has two lines, no scope block',
+    order.join() === 'anatomy,how,honest,pricing,compare,faq' && always === 2 && !/click to go live|The moment you go live|id="scope"/i.test(open), `${order.join(', ')}; always yours ${always}`);
 }
 
 // ---------- servers and the browser ----------
@@ -213,7 +232,7 @@ if (step('shots')) {
         const box = async (sel) => page.locator(sel).first().boundingBox();
         const h1 = await box('h1'); const btn = await box('[data-install="hero"]'); const stage = await box('.ew-hero__stage');
         const card = `${Math.round(stage.y)}-${Math.round(stage.y + stage.height)}`;
-        check(`first screen 390x844 ${id}: headline, Install and the whole card, the card where phase 2 left it (${FOLD_P2[id]})`, h1.y + h1.height <= 844 && btn.y + btn.height <= 844 && stage.y + stage.height <= 844 && card === FOLD_P2[id],
+        check(`first screen 390x844 ${id}: headline, Install and the whole card, the card where phase 4 left it (${FOLD_P2[id]})`, h1.y + h1.height <= 844 && btn.y + btn.height <= 844 && stage.y + stage.height <= 844 && card === FOLD_P2[id],
           `headline ${Math.round(h1.y + h1.height)}, button ${Math.round(btn.y + btn.height)}, card ${card}`);
       },
     }, false);
@@ -303,8 +322,8 @@ async function frame(name, port, path, sel, o = {}) {
       return { x: 0, y: Math.floor(top), width: document.documentElement.clientWidth, height: Math.ceil(bottom - top) };
     }, sel);
     const overflow = await s.page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-    await s.page.screenshot({ path: `${SHOTS}p3-${name}.jpg`, type: 'jpeg', quality: 80, fullPage: true, clip });
-    check(`frame p3-${name}: clean console, no horizontal scroll`, !s.errors.length && overflow <= 0, [...s.errors.slice(0, 3), overflow > 0 ? `overflow ${overflow}px` : ''].filter(Boolean).join(' | '));
+    await s.page.screenshot({ path: `${SHOTS}${o.prefix || 'p3'}-${name}.jpg`, type: 'jpeg', quality: 80, fullPage: true, clip });
+    check(`frame ${o.prefix || 'p3'}-${name}: clean console, no horizontal scroll`, !s.errors.length && overflow <= 0, [...s.errors.slice(0, 3), overflow > 0 ? `overflow ${overflow}px` : ''].filter(Boolean).join(' | '));
     if (o.after) await o.after(s);
   } finally { await s.ctx.close(); }
 }
@@ -360,8 +379,9 @@ if (step('blocks')) {
   try {
     await frame('how-webkit-390', MAIN, '/', '#how', { engine: 'webkit', play: true, after: async ({ page }) => {
       const st = await sceneState(page);
-      const boxes = await page.$$eval('.ew-scene', (ss) => ss.map((s) => { const r = s.getBoundingClientRect(); const i = s.firstElementChild.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height), Math.round(i.left - r.left)]; }));
-      check('WebKit 390: the scenes keep 4:3 and draw their insides in scene units, step 2 finished after playing', boxes.length === 3 && boxes.every(([w, h, x]) => Math.abs(w * 3 / 4 - h) <= 1 && x > 20) && st.anims.every((a) => a === 'finished'), `${boxes.map((b) => b.join('x')).join(', ')}; ${st.anims.length} animations ${[...new Set(st.anims)].join(',')}`);
+      // how it works' three scenes at 4:3, the anatomy drawing at 4:5 (phase 4); insides in scene units
+      const boxes = await page.$$eval('#how .ew-scene, #anatomy .ew-scene', (ss) => ss.map((s) => { const r = s.getBoundingClientRect(); const i = s.querySelector('.ew-scene__panel, .ew-live__phone').getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height), Math.round(i.left - r.left), s.closest('#anatomy') ? 5 / 4 : 3 / 4]; }));
+      check('WebKit 390: the scenes keep their ratio (4:3, the anatomy 4:5) and draw their insides in scene units, step 2 finished after playing', boxes.length === 4 && boxes.every(([w, h, x, k]) => Math.abs(w * k - h) <= 1 && x > 20) && st.anims.every((a) => a === 'finished'), `${boxes.map((b) => b.slice(0, 3).join('x')).join(', ')}; ${st.anims.length} animations ${[...new Set(st.anims)].join(',')}`);
     } });
   } catch (e) {
     check('frame p3-how-webkit-390: WebKit opens the page', false, `${String(e.message || e).split('\n')[0]}; set EW_PLAYWRIGHT_WEBKIT (landing/README.md)`);
@@ -391,11 +411,27 @@ if (step('blocks')) {
   }
   for (const [w, h] of [[1440, 900], [768, 1024], [390, 844]]) await frame(`pricing-${w}`, MAIN, '/', '#pricing', { width: w, height: h, after: w === 768 ? undefined : ({ page }) => barsToScale(page, `at ${w}`) });
   await frame('pricing-dark-390', MAIN, '/', '#pricing', { scheme: 'dark' });
-  await frame('scope-1440', MAIN, '/', '#scope', { width: 1440, height: 900 });
-  await frame('scope-390', MAIN, '/', '#scope');
-  await frame('scope-dark-390', MAIN, '/', '#scope', { scheme: 'dark' });
-  await frame('gates-g2-stack-1440', GATES, '/', '#honest, #scope', { width: 1440, height: 900 });
-  await frame('gates-g2-stack-390', GATES, '/', '#honest, #scope');
+  await frame('gates-g2-1440', GATES, '/', '#honest', { width: 1440, height: 900, prefix: 'p4' });
+  await frame('gates-g2-390', GATES, '/', '#honest', { prefix: 'p4' });
+  // phase 4: what you get and the comparison; at 390 the comparison is one card per question with four answers
+  for (const [w, h] of [[1440, 900], [768, 1024], [390, 844]]) await frame(`anatomy-${w}`, MAIN, '/', '#anatomy', { width: w, height: h, prefix: 'p4' });
+  await frame('anatomy-dark-390', MAIN, '/', '#anatomy', { scheme: 'dark', prefix: 'p4' });
+  for (const [w, h] of [[1440, 900], [768, 1024]]) await frame(`compare-${w}`, MAIN, '/', '#compare', { width: w, height: h, prefix: 'p4' });
+  await frame('compare-390', MAIN, '/', '#compare', { prefix: 'p4', after: async ({ page }) => {
+    const r = await page.evaluate(() => {
+      const t = document.querySelector('.ew-compare');
+      const head = t.querySelector('thead').getBoundingClientRect();
+      const cards = [...t.querySelectorAll('tbody tr')].map((tr) => ({ answers: [...tr.querySelectorAll('td')].filter((td) => td.getBoundingClientRect().height > 0).length, w: tr.getBoundingClientRect().width, block: getComputedStyle(tr).display }));
+      return { head: [head.width, head.height], cards, wide: t.scrollWidth - t.clientWidth };
+    });
+    check('comparison at 390: one card per question with its four answers, the column names hidden, nothing wider than the screen',
+      r.cards.length === 6 && r.cards.every((c) => c.answers === 4 && c.block === 'block' && c.w <= 390) && r.head[0] <= 1 && r.wide <= 0, `${r.cards.length} cards, answers ${r.cards.map((c) => c.answers).join('/')}, head ${r.head.join('x')}`);
+  } });
+  await frame('compare-dark-390', MAIN, '/', '#compare', { scheme: 'dark', prefix: 'p4' });
+  await frame('pricing-ads-first-390', MAIN, '/', '#pricing', { prefix: 'p4', after: async ({ page }) => {
+    const first = await page.$eval('.ew-cost__row', (r) => r.classList.contains('ew-cost__row--ads'));
+    check('pricing: the ad test is the chart\'s first row (an anchor)', first);
+  } });
   for (const [w, h] of [[1440, 900], [390, 844]]) {
     const s = await open(MAIN, '/', { width: w, height: h, motion: 'reduce' });
     const o = await orangeShare(s.page);
