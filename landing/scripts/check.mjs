@@ -416,7 +416,21 @@ if (step('blocks')) {
   // phase 4: what you get and the comparison; at 390 the comparison is one card per question with four answers
   for (const [w, h] of [[1440, 900], [768, 1024], [390, 844]]) await frame(`anatomy-${w}`, MAIN, '/', '#anatomy', { width: w, height: h, prefix: 'p4' });
   await frame('anatomy-dark-390', MAIN, '/', '#anatomy', { scheme: 'dark', prefix: 'p4' });
-  for (const [w, h] of [[1440, 900], [768, 1024]]) await frame(`compare-${w}`, MAIN, '/', '#compare', { width: w, height: h, prefix: 'p4' });
+  // our app icon before our name in the head row, no other app's (DECISIONS.md 2026-11-11): on the name's line at 1440,
+  // hidden at 768, where a column no longer fits both
+  for (const [w, h] of [[1440, 900], [768, 1024]]) await frame(`compare-${w}`, MAIN, '/', '#compare', { width: w, height: h, prefix: 'p4', after: async ({ page }) => {
+    const r = await page.evaluate(() => {
+      const ths = [...document.querySelectorAll('.ew-compare thead th')];
+      const us = ths[0]; const ic = us.querySelector('svg.ew-compare__icon');
+      const range = document.createRange(); range.selectNodeContents(us.lastChild);
+      const t = range.getBoundingClientRect(); const i = ic.getBoundingClientRect();
+      return { icons: ths.map((th) => th.querySelectorAll('svg, img').length).join(''), name: us.textContent, hidden: ic.getAttribute('aria-hidden'),
+        shown: getComputedStyle(ic).display !== 'none', size: [i.width, i.height], mid: Math.abs((i.top + i.bottom) / 2 - (t.top + t.bottom) / 2), lines: range.getClientRects().length, before: i.right <= t.left };
+    });
+    const ok = r.icons === '1000' && r.name === 'Ecomwerce' && r.hidden === 'true' && r.lines === 1 && (w === 1440 ? r.shown && r.size.join() === '20,20' && r.mid <= 3 && r.before : !r.shown);
+    check(`comparison at ${w}: our app icon only, ${w === 1440 ? 'before our name on its line' : 'hidden (a column is too narrow for both)'}, the name on one line`, ok,
+      `icons per column ${r.icons}, ${r.shown ? `shown ${r.size.join('x')}, ${r.mid.toFixed(1)}px off the name's centre` : 'hidden'}, name lines ${r.lines}`);
+  } });
   await frame('compare-390', MAIN, '/', '#compare', { prefix: 'p4', after: async ({ page }) => {
     const r = await page.evaluate(() => {
       const t = document.querySelector('.ew-compare');

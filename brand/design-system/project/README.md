@@ -14,7 +14,7 @@ Ecomwerce is a Shopify app that turns a product from a merchant's catalog into a
 - Call the merchant "you". Ecomwerce says "we" only for an action it owns: "We write the page. You decide when it goes live."
 - Use sentence case everywhere: headings, buttons, labels, ad headlines. No exclamation marks. No emoji. No em dashes: use a comma, parentheses or two sentences.
 - Say "in minutes" without a number: every build's estimate is minutes (2 for one product). Use a number only when it was measured, and keep the measurement one tap away (a footnote or a linked note): a one-product page builds in 1 min 57 s at p75 on our test store (October 2026), so "about two minutes" once the time is re-measured on the production app. Never "in seconds", "instantly" or "in 5 minutes".
-- Compare with other apps only on our own site, in `ComparisonTable`: dated facts from their listings and our installs, names in text, no logos, never a speed claim.
+- Compare with other apps only on our own site, in `ComparisonTable`: dated facts from their listings and our installs, the other apps by name in text, never their logos or icons (our icon only in our column), never a speed claim.
 - Describe what the page has, never what it will earn. No sales, conversion or revenue promises anywhere (Shopify requirement 4.3.1 forbids them in the listing; we hold every surface to it).
 - Name the unit "product page". Not "store", "funnel" or "website": Ecomwerce makes product pages.
 - Write the price the same way everywhere, word for word: "Free to install. Your first 2 product pages are free, then $3 per product page." Add "Monthly cap of $60" where there is room.

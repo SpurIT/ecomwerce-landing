@@ -3,12 +3,15 @@
 // Ecomwerce, PagePilot, Dropmagic and Forge AI on how you pay and how each publishes, never on speed. Every cell comes
 // from src/data/competitors.mjs (prices re-checked on the listings on CHECKED); the table's markup is build-brand.mjs
 // compareTable()'s, copied: change it there first; the audit compares them. On phones one card per question (css).
+// Our app icon (the brand's small version, CMP_ICON in build-brand.mjs) sits before our name in the head row; it is
+// decorative and hidden below 860px. Never another app's logo or icon (DECISIONS.md 2026-11-11, our icon only).
 import { APPS, ROWS, SOURCE } from '../data/competitors.mjs';
 import { PRICE } from '../data/landing.mjs';
 
 const others = APPS.filter((a) => !a.us).map((a) => a.name);
 const label = `Ecomwerce compared with ${others.slice(0, -1).join(', ')} and ${others.at(-1)}`;
-const table = `<div class="ew-compare"><table role="table" aria-label="${label}"><thead role="rowgroup"><tr role="row"><td role="cell"></td>${APPS.map((a) => `<th role="columnheader" scope="col"${a.us ? ' class="ew-compare__us"' : ''}>${a.name}</th>`).join('')}</tr></thead><tbody role="rowgroup">${ROWS.map(([k, row]) => `<tr role="row"><th role="rowheader" scope="row">${row}</th>${APPS.map((a) => `<td role="cell"${a.us ? ' class="ew-compare__us"' : ''} data-label="${a.name}">${a.cells[k]}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+const ICON = '<svg class="ew-compare__icon" viewBox="0 0 1200 1200" width="20" height="20" aria-hidden="true" focusable="false"><rect width="1200" height="1200" rx="264" fill="#FF6A13"/><rect x="300" y="150" width="600" height="600" rx="72" fill="#FFFFFF"/><rect x="300" y="870" width="600" height="180" rx="90" fill="#1A1410"/></svg>';
+const table = `<div class="ew-compare"><table role="table" aria-label="${label}"><thead role="rowgroup"><tr role="row"><td role="cell"></td>${APPS.map((a) => `<th role="columnheader" scope="col"${a.us ? ' class="ew-compare__us"' : ''}>${a.us ? ICON : ''}${a.name}</th>`).join('')}</tr></thead><tbody role="rowgroup">${ROWS.map(([k, row]) => `<tr role="row"><th role="rowheader" scope="row">${row}</th>${APPS.map((a) => `<td role="cell"${a.us ? ' class="ew-compare__us"' : ''} data-label="${a.name}">${a.cells[k]}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 ---
 <section class="lp-section" id="compare" aria-labelledby="compare-title">
   <div class="lp-wrap">

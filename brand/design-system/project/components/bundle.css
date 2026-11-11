@@ -291,6 +291,9 @@
 .ew-compare thead td,.ew-compare tbody th{width:20%}
 .ew-compare tbody th{font-weight:600}
 .ew-compare .ew-compare__us{background:var(--ew-compare-us);font-weight:600}
+/* our app icon before our name; hidden below 860px, where a column no longer fits it beside the name (phones show cards, without the head row) */
+.ew-compare__icon{display:inline-block;width:20px;height:20px;margin-right:8px;vertical-align:middle}
+@media (max-width:859px){.ew-compare__icon{display:none}}
 .ew-compare__src{margin-top:14px}
 @media (max-width:720px){.ew-compare{border:0;border-radius:0;background:none;overflow:visible}
 .ew-compare table,.ew-compare tbody,.ew-compare tr,.ew-compare th,.ew-compare td{display:block;width:auto}
