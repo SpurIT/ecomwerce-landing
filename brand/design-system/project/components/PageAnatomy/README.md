@@ -1,5 +1,8 @@
-A real product page Ecomwerce built, with numbered labels on its parts.
+What you get: the parts of the product page Ecomwerce writes, each with what it does on the page, beside a picture of that page.
 
-- Markup: `figure.ew-anatomy` (a `surface-2` frame, `radius-m`) holding `.ew-anatomy__shot` (the screenshot) and a caption naming the product, the store and the date; beside it `ol.ew-legend` with the numbered labels: headline and photos; price, variants and Add to cart from the theme; benefits; why it stands out; FAQ.
-- Only a real build on a development store, from our own product, with real photos and no invented proof. Until one exists the section is not published; the striped `.ew-ph` placeholder in the preview is for layout only, never for the page.
-- No browser chrome and no desktop background (Shopify 4.4.4 holds for us too). The screenshot sits flat, no shadow.
+- Markup: `ol.ew-legend.ew-legend--described`, one `li` per part: the number in `b`, then `.ew-legend__t` (the part) and `.ew-legend__d` (what it does on the page, one line). Beside it the picture: drawn until a real build exists, then the real screenshot.
+- Parts, in the page's order: a hook headline; your price, variants and Add to cart (the theme's own buy buttons); benefits; four reasons it stands out; AI images, if you want them; an FAQ. Keep exactly what the app writes (the block catalog); add nothing for symmetry.
+- Say what a part does, never what it earns: "the questions that hold a buyer back", not "answers that convert".
+- Drawn (`figure.ew-anatomy--drawn` with `.ew-scene.ew-scene--anatomy`): a tall product page on the orange stage at 4:5, in the scenes' style (scene units, fixed colours, the placeholder product, grey lines for text), with `.ew-mark` numbers on the six parts matching the legend. Still, no motion. `role="img"` with a text alternative that names the parts; the inside is `aria-hidden`. A schematic, never made to look like a screenshot.
+- Real (gate g3): `figure.ew-anatomy` holding the screenshot (`.ew-anatomy__shot`) and a caption naming the product, the store and the date. Only a real build on a development store, from our own product, with real photos and no invented proof. No browser chrome and no desktop background (Shopify 4.4.4 holds for us too); flat, no shadow. The striped `.ew-ph` placeholder is for layout only, never for the page.
+- On the landing it sits right under the hero, before How it works; the real screenshot replaces the drawing in the same block, and the hero's "See a sample page" points to it.

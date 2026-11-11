@@ -10,6 +10,10 @@ export const SITE = {
 
 export const OPTIN_PREFIX = '/_optin';
 
+// The price (docs/specs/billing.md BL-1): $3 per product page, the first 2 free for the life of the shop, the $60 cap
+// is 20 paid pages a 30-day cycle and building pauses at it. CostChart.astro and the comparison compute from it.
+export const PRICE = { perPage: 3, freePages: 2, capPages: 20 };
+
 // The App Store listing. The app is not listed yet: a search url stands in (it cannot land on another company's app);
 // replace it with https://apps.shopify.com/<handle> when the operator gives the handle.
 export const LISTING_URL = 'https://apps.shopify.com/search?q=ecomwerce';
@@ -43,26 +47,26 @@ export const VARIANTS = {
     path: '/',
     angle: 'p2 product tester (Meta, TikTok)',
     eyebrow: 'Shopify app for product testers',
-    headline: { gate: 'g1', target: 'A product page for every product you test.', launch: 'Pick a product. Get its product page.' },
-    title: { gate: 'g1', target: 'Ecomwerce: a product page for every product you test', launch: 'Ecomwerce: pick a product, get its product page' },
-    lead: 'Ecomwerce writes the page from your Shopify catalog: headline, benefits and FAQ. You preview it on your store, and it goes live only when you press Go live.',
+    headline: { gate: 'g1', target: 'A product page for every product you test.', launch: 'Your product page, ready for ads in minutes.' },
+    title: { gate: 'g1', target: 'Ecomwerce: a product page for every product you test', launch: 'Ecomwerce: your product page, ready for ads in minutes' },
+    lead: 'Pick a product in your Shopify store. Ecomwerce writes and builds the page your ads send people to: a hook headline, benefits, reasons to buy and an FAQ.',
   },
   first: {
     path: '/first-product-page/',
     angle: 'p1 first-store beginner with a product (Meta, TikTok)',
     eyebrow: 'Shopify app for new stores',
-    headline: { target: 'Your first product page, written for you.' },
-    title: { target: 'Ecomwerce: your first product page, written for you' },
-    lead: "Already have a product in your Shopify store? Pick it, and Ecomwerce writes its page: headline, benefits and FAQ. See it on your store first, then go live when you're ready.",
+    headline: { target: 'Your first product page, built for you in minutes.' },
+    title: { target: 'Ecomwerce: your first product page, built for you in minutes' },
+    lead: 'Already have a product in your Shopify store? Pick it, and Ecomwerce writes and builds its page: a hook headline, benefits, reasons to buy and an FAQ.',
     noStore: 'under-install',
   },
   builder: {
     path: '/product-page-builder/',
     angle: 'Google search, ad group "product page builder"',
     eyebrow: 'Product page builder for Shopify',
-    headline: { target: 'The product page builder that writes the page.' },
-    title: { target: 'Ecomwerce: the product page builder that writes the page' },
-    lead: 'No drag and drop. Pick a product from your catalog and Ecomwerce writes its page: headline, benefits and FAQ. Preview it on your store, then go live. You can still edit it in the Shopify theme editor.',
+    headline: { target: 'The product page builder that writes the page in minutes.' },
+    title: { target: 'Ecomwerce: the product page builder that writes the page in minutes' },
+    lead: 'No drag and drop. Pick a product from your catalog, and Ecomwerce writes and builds its page: a hook headline, benefits, reasons to buy and an FAQ. You can still edit it in the Shopify theme editor.',
   },
 };
 
