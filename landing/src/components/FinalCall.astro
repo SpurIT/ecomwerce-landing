@@ -1,17 +1,19 @@
 ---
-// FinalCall (brand book): the hero's headline again on orange, "Build my first page free" (the Install link, as the
-// hero's) and the official badge, the price sentence,
-// then "No Shopify store yet?" (NoStore).
+// FinalCall (brand book): the glyph (phase 5: the hero opened with the icon, the page closes with it), the hero's
+// headline again on orange, "Build my first page free" (the Install link, as the hero's) and the official badge, the
+// price sentence, then "No Shopify store yet?" (NoStore). lp-final sits over the footer's top edge (landing.css).
 import badge from '../../../brand/shopify/badge-shopify-app-store-dark.svg?url';
+import mark from '../../../brand/logo/ecomwerce-mark-on-orange.svg?url';
 import NoStore from './NoStore.astro';
 import { installHref } from '../lib/site.mjs';
 
 interface Props { headline: string; campaign: string }
 const { headline, campaign } = Astro.props;
 ---
-<section class="lp-section" aria-labelledby="final-title">
+<section class="lp-section lp-final" aria-labelledby="final-title">
   <div class="lp-wrap">
     <div class="ew-stage ew-final">
+      <img class="ew-final__mark" src={mark} width="33" height="56" alt="" loading="lazy">
       <h2 class="ew-display-l" id="final-title">{headline}</h2>
       <div class="ew-final__actions">
         <a class="ew-btn ew-btn--on-orange ew-btn--lg" data-install="final" href={installHref(campaign, 'final')}>Build my first page free</a>

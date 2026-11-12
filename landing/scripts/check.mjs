@@ -52,12 +52,15 @@ const listing = new URL(LISTING_URL);
 // product's price (TASK.md phase 3 RESEARCH), the comparison's prices from its one source and Shopify's $1 offer that the
 // faq names (phase 4: the operator's fact, $1 a month for 3 months)
 const DOLLARS = new Set(['$3', '$9', '$36', '$60', '$150', '$250', '$50', '$34.00', '$1', ...CMP_DOLLARS]);
-// the order of the sections below the hero (3-landing-page.md, phase 4); a closed gate's section is absent
-const ORDER = ['anatomy', 'how', 'honest', 'pricing', 'compare', 'faq'];
-const REQUIRED = ['anatomy', 'how', 'pricing', 'compare', 'faq'];
+// the order of the sections below the hero (3-landing-page.md, phase 5: how it works before what you get); a closed gate's section is absent
+const ORDER = ['how', 'anatomy', 'honest', 'pricing', 'compare', 'faq'];
+const REQUIRED = ['how', 'anatomy', 'pricing', 'compare', 'faq'];
 // the card's top and bottom at 390 x 844 where phase 4 left them (TASK.md phase 4 VERIFY): the new headlines and leads
 // moved it (phase 2 left 545-689, 616-760, 616-760); the first screen still holds the headline, Install and the card
-const FOLD_P2 = { default: '589-733', first: '589-733', builder: '660-804' };
+// phase 5: the hero's stage is the build (ew-build, data-hero-build), taller on phones (233px at 390): whole in the first
+// screen on default and first; on builder (one more headline line) its card part, 44 of its 65 units, is (operator,
+// 2026-11-12: the switch below the line is fine, the stage waits until it shows anyway)
+const FOLD_P2 = { default: '589-822', first: '589-822', builder: '660-893' };
 
 // ---------- 1. extra builds ----------
 const build = (env, out) => spawnSync('npx', ['astro', 'build'], { cwd: HERE, env: { ...process.env, ...env, OUT_DIR: out }, encoding: 'utf8' });
@@ -151,8 +154,8 @@ if (step('audit')) {
   // yours" keeps two lines (the go-live fact is in step 3 and the faq)
   const order = [...open.matchAll(/<section class="lp-section[^"]*" id="([a-z]+)"/g)].map((m) => m[1]);
   const always = (open.match(/ew-always"[\s\S]*?<\/ul>/) || [''])[0].split('<li').length - 1;
-  check('gates-open build: what you get, how it works, real data only, pricing, the comparison, the faq; "Always yours" has two lines, no scope block',
-    order.join() === 'anatomy,how,honest,pricing,compare,faq' && always === 2 && !/click to go live|The moment you go live|id="scope"/i.test(open), `${order.join(', ')}; always yours ${always}`);
+  check('gates-open build: how it works, what you get, real data only, pricing, the comparison, the faq; "Always yours" has two lines, no scope block',
+    order.join() === 'how,anatomy,honest,pricing,compare,faq' && always === 2 && !/click to go live|The moment you go live|id="scope"/i.test(open), `${order.join(', ')}; always yours ${always}`);
 }
 
 // ---------- servers and the browser ----------
@@ -230,9 +233,10 @@ if (step('shots')) {
       width: 390, height: 844,
       after: async ({ page }) => {
         const box = async (sel) => page.locator(sel).first().boundingBox();
-        const h1 = await box('h1'); const btn = await box('[data-install="hero"]'); const stage = await box('.ew-hero__stage');
+        const h1 = await box('h1'); const btn = await box('[data-install="hero"]'); const stage = await box('[data-hero-build]');
         const card = `${Math.round(stage.y)}-${Math.round(stage.y + stage.height)}`;
-        check(`first screen 390x844 ${id}: headline, Install and the whole card, the card where phase 4 left it (${FOLD_P2[id]})`, h1.y + h1.height <= 844 && btn.y + btn.height <= 844 && stage.y + stage.height <= 844 && card === FOLD_P2[id],
+        const shown = id === 'builder' ? stage.y + stage.height * 44 / 65 : stage.y + stage.height;
+        check(`first screen 390x844 ${id}: headline, Install and the stage (${id === 'builder' ? 'its card part' : 'whole'}), the stage where phase 5 left it (${FOLD_P2[id]})`, h1.y + h1.height <= 844 && btn.y + btn.height <= 844 && shown <= 844 && card === FOLD_P2[id],
           `headline ${Math.round(h1.y + h1.height)}, button ${Math.round(btn.y + btn.height)}, card ${card}`);
       },
     }, false);
@@ -257,8 +261,8 @@ if (step('shots')) {
   await shot('default-reduced-390', MAIN, '/', {
     width: 390, height: 844, motion: 'reduce',
     after: async ({ page }) => {
-      const names = await page.evaluate(() => [...document.querySelectorAll('.ew-card--build *')].map((e) => getComputedStyle(e).animationName).filter((n) => n !== 'none'));
-      check('reduced motion: the card is finished at once, no animation', names.length === 0, names.join(','));
+      const names = await page.evaluate(() => [...document.querySelectorAll('[data-hero-build], [data-hero-build] *')].map((e) => getComputedStyle(e).animationName).filter((n) => n !== 'none'));
+      check('reduced motion: the hero stage shows the finished page at once, no animation', names.length === 0, names.join(','));
     },
   }, false);
   await shot('default-motion-mid-390', MAIN, '/', { width: 390, height: 844, motion: 'no-preference', before: async (p) => { await p.reload(); await p.waitForTimeout(500); await p.screenshot({ path: `${SHOTS}default-motion-500ms-390.jpg`, type: 'jpeg', quality: 80 }); } }, false);
@@ -554,7 +558,7 @@ if (step('clicks')) {
     check('faq: an item opens on a click', await item.evaluate((d) => d.open));
     // keyboard: every stop has a visible focus ring, in page order
     const stops = [];
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 70; i++) {
       await page.keyboard.press('Tab');
       stops.push(await page.evaluate(() => {
         const el = document.activeElement;
@@ -567,7 +571,9 @@ if (step('clicks')) {
     const real = stops.filter(Boolean);
     const noRing = real.filter((x) => !x.ring);
     const installs = new Set(real.filter((x) => x.install).map((x) => x.install));
-    check('keyboard: every tab stop has a visible focus ring; every Install reached', !noRing.length && installs.size === 6, `${real.length} stops: ${real.map((x) => x.install || x.name).join(' > ').slice(0, 520)}${noRing.length ? ' | no ring: ' + noRing.map((x) => x.name) : ''}`);
+    // phase 5: the header's Install shows only while no other is in view, so tabbing down from the top passes the header
+    // before it shows; reached: hero, pricing, faq, final, final-badge (the footer badge left in phase 5)
+    check('keyboard: every tab stop has a visible focus ring; every Install in the page reached (the header\'s shows only past the hero)', !noRing.length && installs.size === 5, `${real.length} stops: ${real.map((x) => x.install || x.name).join(' > ').slice(0, 520)}${noRing.length ? ' | no ring: ' + noRing.map((x) => x.name) : ''}`);
     await ctx.close();
   }
 }

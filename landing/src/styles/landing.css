@@ -14,9 +14,6 @@ a{color:inherit}
 .lp-hero .ew-hero__text{gap:22px}
 .lp-hero__actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
 .lp-hero__fine{display:flex;flex-direction:column;gap:6px}
-.lp-hero .ew-hero__stage{min-height:520px;box-sizing:border-box}
-.lp-card-figure{margin:0;width:100%;max-width:300px}
-.lp-card-figure img{display:block;width:100%;height:100%;object-fit:cover}
 
 /* in-app browsers (Instagram, Facebook, TikTok): the hint under the hero button; the script shows it */
 .lp-inapp{display:flex;flex-direction:column;align-items:flex-start;gap:10px;max-width:34em}
@@ -48,10 +45,10 @@ a{color:inherit}
 .lp-span-4{grid-column:span 4}.lp-span-5{grid-column:span 5}.lp-span-6{grid-column:span 6}.lp-span-7{grid-column:span 7}.lp-span-8{grid-column:span 8}
 .lp-footnote{margin-top:24px}
 .lp-anatomy__img{display:block;width:100%;height:auto;border-radius:10px}
-/* what you get (phase 4): the legend beside a drawing of at most 440px; stacked on phones (lp-cols) */
+/* what you get (phase 4; phase 5: the drawing of at most 440px on the left, the legend on its right, so the page
+   zigzags after the hero's picture on the right); stacked on phones (lp-cols), the drawing first */
 .lp-anatomy{gap:24px 56px;align-items:center}
-.lp-anatomy__fig{width:100%;max-width:440px;justify-self:end}
-@media (max-width:720px){.lp-anatomy__fig{justify-self:start}}
+.lp-anatomy__fig{width:100%;max-width:440px;justify-self:start}
 .lp-pricing .ew-price{max-width:none}
 /* pricing (phase 3): the head over two columns, what testing costs (CostChart) in 7, the card and how billing works
    in 5; on tablets the chart spans the row and the card sits beside the notes (5 columns there would wrap the card) */
@@ -61,7 +58,20 @@ a{color:inherit}
   .lp-pricing__plan .ew-bill{margin-top:0}
 }
 .lp-faq .ew-faq{max-width:none}
+/* the faq (phase 5): the heading over the aside on the left, which follows the reader down the questions; on phones the
+   aside comes after the questions (its place in the html) */
+@media (min-width:721px){
+  .lp-faq__grid{grid-template-rows:auto 1fr}
+  .lp-faq__head{grid-column:1/span 4;grid-row:1}
+  .lp-faq__list{grid-column:5/span 8;grid-row:1/span 2}
+  .lp-faq__aside{grid-column:1/span 4;grid-row:2;align-self:stretch}
+  .lp-faq__aside .ew-faq__aside{position:sticky;top:96px}
+}
 .ew-footer{margin-top:var(--space-24)}
+/* the end of the page (phase 5): the final call sits over the ink footer's top edge, so the page ends in the mark's
+   colours; pages without it (legal, 404) keep the gap above the footer */
+.lp-section.lp-final{padding-bottom:0;position:relative;z-index:1}
+main:has(.lp-final) + .ew-footer{margin-top:-120px;padding-top:176px}
 
 /* legal pages and the 404 */
 .lp-doc{padding:64px 0 0;max-width:760px}
@@ -74,10 +84,9 @@ a{color:inherit}
 .lp-doc td{color:var(--text-2)}
 .lp-draft{display:inline-block;background:var(--orange-tint);color:var(--text)!important;border-radius:8px;padding:8px 12px;font-size:var(--text-small)}
 
-/* tablets: the hero stacks, the stage follows the text with the full card */
+/* tablets: the hero stacks, the stage follows the text and lies on its side (the build, ew-build, below 900px) */
 @media (max-width:900px){
   .lp-hero .ew-hero{grid-template-columns:1fr}
-  .lp-hero .ew-hero__stage{min-height:0;padding:32px}
 }
 
 /* phones */
@@ -88,13 +97,12 @@ a{color:inherit}
   .lp-hero .ew-hero{gap:24px}
   .lp-hero .ew-hero__text{gap:16px}
   .lp-hero__actions .ew-btn--lg{height:52px;padding:0 20px;font-size:16px}
-  .lp-hero .ew-hero__stage{min-height:0;padding:16px}
-  .lp-card-figure{max-width:none}
   .lp-section{padding:var(--space-16) 0}
   .lp-head{margin-bottom:32px}
   .lp-cols{grid-template-columns:1fr}
   .lp-cols>*{grid-column:auto}
   .ew-footer{margin-top:var(--space-16)}
+  main:has(.lp-final) + .ew-footer{margin-top:-80px;padding-top:128px}
   .lp-doc{padding-top:32px}
   .lp-doc table,.lp-doc tbody,.lp-doc tr,.lp-doc td{display:block}
   .lp-doc thead{display:none}

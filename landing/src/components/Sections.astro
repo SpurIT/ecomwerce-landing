@@ -1,7 +1,8 @@
 ---
-// The sections below the hero, in the order of 3-landing-page.md (phase 4): what you get (Anatomy, which takes in g3's
-// sample), how it works (HowItWorks, g4), real data only (g2), pricing with what testing costs (CostChart), the
-// comparison (Compare) and the faq (g2, g4). A closed gate's part is not in the html; its launch line is (copy.md,
+// The sections below the hero, in the order of 3-landing-page.md (phase 5): how it works (HowItWorks, g4), what you get
+// (Anatomy, which takes in g3's sample; after how it works since phase 5, so the page drawn in the hero's build is not
+// drawn again right under it), real data only (g2), pricing with what testing costs (CostChart), the comparison
+// (Compare) and the faq (g2, g4), with an aside since phase 5: the offer, its own Install and the support contact. A closed gate's part is not in the html; its launch line is (copy.md,
 // gates). The scope block left the page in phase 4: its facts live in the faq, and "Always yours" keeps two lines
 // (the go-live fact is in step 3 and in "Will it change my live store?").
 import Anatomy from './Anatomy.astro';
@@ -9,6 +10,7 @@ import Compare from './Compare.astro';
 import CostChart from './CostChart.astro';
 import HowItWorks from './HowItWorks.astro';
 import Icon from './Icon.astro';
+import { INPUTS } from '../data/landing.mjs';
 import { installHref, isOpen } from '../lib/site.mjs';
 
 interface Props { campaign: string }
@@ -16,9 +18,9 @@ const { campaign } = Astro.props;
 const time = isOpen('g4');
 const honest = isOpen('g2');
 ---
-<Anatomy />
-
 <HowItWorks />
+
+<Anatomy />
 
 {honest && (
 <section class="lp-section" id="honest" aria-labelledby="honest-title">
@@ -81,9 +83,9 @@ const honest = isOpen('g2');
 <Compare />
 
 <section class="lp-section lp-faq" id="faq" aria-labelledby="faq-title">
-  <div class="lp-wrap lp-cols">
-    <div class="lp-span-4"><div class="lp-head"><span class="ew-eyebrow">FAQ</span><h2 class="ew-display-l" id="faq-title">Questions before you install</h2></div></div>
-    <div class="lp-span-8">
+  <div class="lp-wrap lp-cols lp-faq__grid">
+    <div class="lp-span-4 lp-faq__head"><div class="lp-head"><span class="ew-eyebrow">FAQ</span><h2 class="ew-display-l" id="faq-title">Questions before you install</h2></div></div>
+    <div class="lp-span-8 lp-faq__list">
       <div class="ew-faq">
         <details open><summary>Will it change my live store?</summary><p>Not until you press Go live. Ecomwerce builds the page in a new theme on your store, based on Horizon, Shopify’s free theme, and you preview it first. When you go live, that theme becomes your live theme and your current one moves to your theme library, so you can switch back.</p></details>
         <details><summary>Do I need a Shopify store?</summary><p>Yes. Ecomwerce picks products from your Shopify catalog, so it needs your store with your product in it. No store yet? Press Install, then create your Shopify account and store when Shopify asks. No product yet? Add it by hand or with your supplier app, then pick it in Ecomwerce.</p></details>
@@ -97,6 +99,14 @@ const honest = isOpen('g2');
         <details><summary>What happens if I uninstall?</summary><p>The pages are built with Ecomwerce blocks, so their content disappears from your store when you uninstall. The app says so before you go live.</p></details>
         {honest && <details><summary>Does it add reviews or ratings?</summary><p>Only real ones. Ecomwerce never invents reviews, ratings or counters. If you add your real reviews, the page shows them.</p></details>}
       </div>
+    </div>
+    <div class="lp-span-4 lp-faq__aside">
+      <aside class="ew-faq__aside" aria-label="Try it on your store">
+        <h3 class="ew-heading-3">The quickest answer is your own page</h3>
+        <p class="ew-small">Your first 2 product pages are free, and nothing goes live until you press Go live.</p>
+        <a class="ew-btn ew-btn--block" data-install="faq" href={installHref(campaign, 'faq')}>Build my first page free</a>
+        <p class="ew-note">Other questions? Write to {INPUTS.supportEmail ? <a href={`mailto:${INPUTS.supportEmail}`}>{INPUTS.supportEmail}</a> : '[support email]'}.</p>
+      </aside>
     </div>
   </div>
 </section>

@@ -71,8 +71,9 @@ Never use: magic, revolutionary, guaranteed, 10x, explode your sales, winning pr
 
 ## Motion
 
-- The one motion is the build: the photo window fills, the title line writes in, the buy button appears. Use it in the hero and in video ads, 1.2 to 2 seconds, once. On the landing page it plays once more, in How it works (Steps, the write scene), when that scene comes into view.
-- With `prefers-reduced-motion`, show the finished card and nothing else. The first frame of any video is the finished page.
+- The one motion is the build: the photo window fills, the title line writes in, the buy button appears. In video ads it takes 1.2 to 2 seconds, once. On the landing page it plays once more, in How it works (Steps, the write scene), when that scene comes into view.
+- The landing hero tells the whole story once, in about 4.8 seconds (Hero): the stage opens as the app icon, the mark becomes the product card, then the page is written around it; a Before / After switch replays it. It is the only place the mark's parts move, and it never loops. On a phone it waits until the stage shows.
+- With `prefers-reduced-motion`, show the finished page and nothing else (the hero's switch still works, at once). The first frame of any video is the finished page.
 
 ## Where the brand applies
 

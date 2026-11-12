@@ -1,36 +1,38 @@
 ---
-// SiteFooter (brand book): SpurIT and the contact (ad platform rules), the legal links, "Privacy choices" (shown by the
-// script: without it no tag loads, so there is nothing to choose), the official badge (white in dark mode).
-import lockup from '../../../brand/logo/ecomwerce-lockup.svg?url';
+// SiteFooter (brand book; phase 5): ink, in the mark's colours, under the final call's orange (which sits over its top
+// edge, landing.css): SpurIT and the contact (ad platform rules), what is on this page, the legal links and "Privacy
+// choices" (shown by the script: without it no tag loads, so there is nothing to choose). The official badge stays in
+// the final call only (phase 5), so the footer no longer repeats it.
 import lockupWhite from '../../../brand/logo/ecomwerce-lockup-white.svg?url';
-import badge from '../../../brand/shopify/badge-shopify-app-store-dark.svg?url';
-import badgeWhite from '../../../brand/shopify/badge-shopify-app-store-light.svg?url';
 import { INPUTS } from '../data/landing.mjs';
-import { installHref } from '../lib/site.mjs';
 
-interface Props { campaign: string; choices?: boolean }
-const { campaign, choices = true } = Astro.props;
+interface Props { campaign: string; choices?: boolean; onPage?: boolean }
+const { choices = true, onPage = true } = Astro.props;
+const base = onPage ? '' : '/';
+const ON_PAGE = [['#how', 'How it works'], ['#anatomy', 'What you get'], ['#pricing', 'Pricing'], ['#compare', 'Compare'], ['#faq', 'FAQ']];
 ---
 <footer class="ew-footer">
   <div class="lp-wrap ew-footer__grid">
     <div class="ew-footer__brand">
-      <img class="ew-light-only" src={lockup} width="150" height="28" alt="Ecomwerce" loading="lazy">
-      <img class="ew-dark-only" src={lockupWhite} width="150" height="28" alt="Ecomwerce" loading="lazy">
+      <img src={lockupWhite} width="150" height="28" alt="Ecomwerce" loading="lazy">
       <p class="ew-small">Made by SpurIT</p>
       <p class="ew-small">Support: {INPUTS.supportEmail ? <a href={`mailto:${INPUTS.supportEmail}`}>{INPUTS.supportEmail}</a> : '[support email]'}</p>
     </div>
-    <ul class="ew-footer__links" aria-label="Legal">
-      <li><a href="/privacy/">Privacy policy</a></li>
-      <li><a href="/terms/">Terms</a></li>
-      <li><a href="/cookies/">Cookies</a></li>
-      <li><a href="/legal-notice/">Legal notice</a></li>
-      {choices && <li data-consent-link hidden><button type="button" data-consent-open="settings">Privacy choices</button></li>}
-    </ul>
-    <div class="ew-footer__badge">
-      <a class="ew-badge" data-install="footer-badge" href={installHref(campaign, 'footer-badge')}>
-        <img class="ew-light-only" src={badge} width="166" height="44" alt="Find it on the Shopify App Store" loading="lazy">
-        <img class="ew-dark-only" src={badgeWhite} width="166" height="44" alt="Find it on the Shopify App Store" loading="lazy">
-      </a>
+    <nav class="ew-footer__col" aria-label="On this page">
+      <p class="ew-footer__h">On this page</p>
+      <ul class="ew-footer__links">
+        {ON_PAGE.map(([href, t]) => <li><a href={base + href}>{t}</a></li>)}
+      </ul>
+    </nav>
+    <div class="ew-footer__col">
+      <p class="ew-footer__h">Legal</p>
+      <ul class="ew-footer__links" aria-label="Legal">
+        <li><a href="/privacy/">Privacy policy</a></li>
+        <li><a href="/terms/">Terms</a></li>
+        <li><a href="/cookies/">Cookies</a></li>
+        <li><a href="/legal-notice/">Legal notice</a></li>
+        {choices && <li data-consent-link hidden><button type="button" data-consent-open="settings">Privacy choices</button></li>}
+      </ul>
     </div>
     <div class="ew-footer__legal">
       <p class="ew-note">Shopify is a trademark of Shopify Inc.</p>

@@ -1,7 +1,10 @@
 ---
 // Hero (brand book): eyebrow, the variant's headline, lead, Install, the launch stand-in or "See a sample page" (g3),
 // the in-app hint (shown by the script in Instagram, Facebook and TikTok only), the price sentence, the language line,
-// and the product card on the orange stage with the build motion (ProductCard, ew-card--build), compact on phones.
+// and the build on the orange stage (brand book Hero, ew-build; phase 5): the stage opens as the app icon, the mark
+// turns into the product card (before), then Ecomwerce writes the page around it (after), once, in css; the script
+// shows the Before / After switch (src/scripts/landing.js, section 7). The stage's markup is the brand generator's
+// (heroBuild in brand/tools/build-brand.mjs), copied: change it there first.
 // "No Shopify store yet?" (NoStore) sits right under Install where the variant says so (the p1 page), else last.
 import NoStore from './NoStore.astro';
 import { SAMPLE } from '../data/landing.mjs';
@@ -16,9 +19,15 @@ if (real && !(SAMPLE.heroPhoto && SAMPLE.heroTitle && SAMPLE.heroPrice)) {
 }
 const title = real ? SAMPLE.heroTitle : 'Ceramic pour-over set';
 const price = real ? SAMPLE.heroPrice : '$34.00';
-const label = real
-  ? `A product page card: a photo of ${SAMPLE.heroTitle}, its title, the price ${SAMPLE.heroPrice} and an Add to cart button`
-  : 'A product page card: a photo of a ceramic pour-over set, its title, the price $34.00 and an Add to cart button';
+// the hero's placeholder product (never a real brand's product), hidden from assistive technology inside the stage
+const PHOTO = '<svg class="ew-photo" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><rect width="400" height="400" fill="#F3EEE8"/><ellipse cx="200" cy="322" rx="122" ry="13" fill="#E4DBD1"/><path d="M118 128h164l-48 98h-68z" fill="#E7DCD1"/><rect x="140" y="216" width="120" height="14" rx="7" fill="#D7CBBF"/><path d="M128 238h144v46a40 40 0 0 1-40 40h-64a40 40 0 0 1-40-40z" fill="#FFFFFF" stroke="#D7CBBF" stroke-width="3"/><path d="M272 252h14a22 22 0 0 1 0 44h-10" fill="none" stroke="#D7CBBF" stroke-width="9"/></svg>';
+// the image beside the four reasons: the product in use (drawn, like the photo)
+const PHOTO_WHY = '<svg viewBox="0 0 260 110" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><rect width="260" height="110" fill="#F3EEE8"/><circle cx="74" cy="42" r="24" fill="#FFEADB"/><rect y="80" width="260" height="30" fill="#E4DBD1"/><path d="M146 50h56v20a16 16 0 0 1-16 16h-24a16 16 0 0 1-16-16z" fill="#FFFFFF" stroke="#D7CBBF" stroke-width="2.5"/><path d="M202 56h7a9 9 0 0 1 0 18h-5" fill="none" stroke="#D7CBBF" stroke-width="5"/><path d="M164 42c-5-6 5-9 0-16M184 42c-5-6 5-9 0-16" fill="none" stroke="#D7CBBF" stroke-width="3" stroke-linecap="round"/></svg>';
+const photo = real
+  ? `<img class="ew-photo" src="${SAMPLE.heroPhoto.src}" width="${SAMPLE.heroPhoto.width}" height="${SAMPLE.heroPhoto.height}" alt="" fetchpriority="high">`
+  : PHOTO;
+const alt = `Illustration: the Ecomwerce mark turns into a product card with a photo of ${real ? SAMPLE.heroTitle : 'a ceramic pour-over set'}, its title, the price ${price} and Add to cart, then Ecomwerce writes the page around it: a hook headline, variants, benefits, four reasons it stands out and an FAQ.`;
+const stage = `<div class="ew-stage ew-build ew-build--intro" data-hero-build><div class="ew-build__art" role="img" aria-label="${alt}"><span class="ew-b ew-b-ml"></span><span class="ew-b ew-b-mb"></span><span class="ew-b ew-b-win">${photo}</span><span class="ew-b ew-b-tw"><span class="ew-b-title">${title}</span></span><span class="ew-b ew-b-price">${price}</span><span class="ew-b ew-b-buy">Add to cart</span><span class="ew-b ew-b-h1"></span><span class="ew-b ew-b-h2"></span><span class="ew-b ew-b-chips"><i></i><i></i><i></i></span><span class="ew-b ew-b-sec ew-b-ben"><b>Benefits</b><i><span></span></i><i><span></span></i><i><span></span></i><i><span></span></i></span><span class="ew-b ew-b-sec ew-b-why"><b>Why it stands out</b><span class="ew-b-img">${PHOTO_WHY}</span><span class="ew-b-tiles"><i></i><i></i><i></i><i></i></span></span><span class="ew-b ew-b-sec ew-b-faq"><b>FAQ</b><i></i><i></i><i></i><i></i></span><span class="ew-b ew-b-scan"></span></div><span class="ew-build__status" aria-hidden="true"><span>Your product</span><span><i></i>AI writing sales copy</span><span><i></i>Ready</span></span><div class="ew-build__switch" role="group" aria-label="The product page, before and after Ecomwerce" hidden><span class="ew-build__knob" aria-hidden="true"></span><button type="button" data-show="before" aria-pressed="false">Before</button><button type="button" data-show="after" aria-pressed="true">After</button></div></div>`;
 ---
 <section class="lp-hero" aria-labelledby="hero-title">
   <div class="lp-wrap">
@@ -48,20 +57,7 @@ const label = real
         </div>
         {!noStoreFirst && <NoStore campaign={campaign} placement="no-store-hero" />}
       </div>
-      <div class="ew-stage ew-hero__stage">
-        <div class="lp-card-figure" role="img" aria-label={label}>
-          <div class="ew-card ew-card--build ew-card--compact-sm" aria-hidden="true">
-            <div class="ew-card__window">
-              {real
-                ? <img class="ew-photo" src={SAMPLE.heroPhoto.src} width={SAMPLE.heroPhoto.width} height={SAMPLE.heroPhoto.height} alt="" fetchpriority="high">
-                : <svg class="ew-photo" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice"><rect width="400" height="400" fill="#F3EEE8"/><ellipse cx="200" cy="322" rx="122" ry="13" fill="#E4DBD1"/><path d="M118 128h164l-48 98h-68z" fill="#E7DCD1"/><rect x="140" y="216" width="120" height="14" rx="7" fill="#D7CBBF"/><path d="M128 238h144v46a40 40 0 0 1-40 40h-64a40 40 0 0 1-40-40z" fill="#FFFFFF" stroke="#D7CBBF" stroke-width="3"/><path d="M272 252h14a22 22 0 0 1 0 44h-10" fill="none" stroke="#D7CBBF" stroke-width="9"/></svg>}
-            </div>
-            <div class="ew-card__titlewrap"><div class="ew-card__line"></div><p class="ew-card__title">{title}</p></div>
-            <span class="ew-card__price">{price}</span>
-            <span class="ew-btn ew-btn--on-orange ew-btn--block ew-card__buy">Add to cart</span>
-          </div>
-        </div>
-      </div>
+      <Fragment set:html={stage} />
     </div>
   </div>
 </section>

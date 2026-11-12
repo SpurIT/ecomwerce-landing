@@ -7,8 +7,11 @@
 //    Google Ads conversion, with variant, placement, utm_source and in_app; the navigation waits 300 ms at most;
 // 4. the visit's utm parameters on every Install link (the html carries the landing's defaults);
 // 5. in the Instagram, Facebook and TikTok browsers only: the hint under the hero button and "Copy link";
-// 6. How it works, step 2: its scene builds once when it comes into view (phase 3).
-// The build motions are css (bundle.css, ew-card--build and ew-scene--build). The config comes from
+// 6. How it works, step 2: its scene builds once when it comes into view (phase 3);
+// 7. the hero's build: it waits until it shows, then the Before / After switch (phase 5);
+// 8. the header's Install: in view only while no other is (phase 5).
+// 9. What you get: once in view, the drawing walks through its six parts (phase 5).
+// The build motions are css (bundle.css, ew-build--intro and ew-scene--build). The config comes from
 // <script id="ew-config"> (Base.astro).
 const config = JSON.parse(document.getElementById('ew-config')?.textContent || '{}');
 const optinCopy = config.geo !== 'optout';
@@ -219,4 +222,76 @@ if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: re
     }, { threshold: 0.4 });
     io.observe(scene);
   }
+}
+
+// ---------- 7. the hero's build: wait until it shows, then the Before / After switch (phase 5) ----------
+// The stage plays its build once on arrival in css (bundle.css, ew-build--intro), without this script too, and ends on
+// the page Ecomwerce writes. On a phone the stage sits low in the first screen, so the script holds the intro on the
+// icon (ew-build--armed) until 60 % of the stage shows. It also shows the switch: "Before" puts the product card back,
+// "After" writes the page again (ew-build--replay). With reduced motion both switch at once (bundle.css drops the motion).
+for (const hb of document.querySelectorAll('[data-hero-build]')) {
+  if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const r = hb.getBoundingClientRect();
+    const shown = Math.max(0, Math.min(r.bottom, innerHeight) - Math.max(r.top, 0)) / r.height;
+    if (shown < 0.6) {
+      hb.classList.add('ew-build--armed');
+      const io = new IntersectionObserver((entries) => {
+        if (!entries.some((e) => e.intersectionRatio >= 0.6)) return;
+        hb.classList.remove('ew-build--armed');
+        io.disconnect();
+      }, { threshold: 0.6 });
+      io.observe(hb);
+    }
+  }
+  const sw = hb.querySelector('.ew-build__switch');
+  const buttons = sw.querySelectorAll('button[data-show]');
+  sw.hidden = false;
+  // once the intro has shown the switch, drop it: the page it ends on is the stage's own finished state, and nothing
+  // keeps filling it (a full-page capture re-runs filled animations)
+  hb.addEventListener('animationend', (e) => {
+    if (e.animationName === 'ew-b-show') hb.classList.remove('ew-build--intro');
+  });
+  sw.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-show]');
+    if (!b || b.getAttribute('aria-pressed') === 'true') return;
+    for (const x of buttons) x.setAttribute('aria-pressed', String(x === b));
+    hb.classList.remove('ew-build--intro', 'ew-build--replay');
+    if (b.dataset.show === 'before') { hb.classList.add('is-before'); return; }
+    hb.classList.remove('is-before');
+    void hb.offsetWidth; // a fresh start for the writing
+    hb.classList.add('ew-build--replay');
+  });
+}
+
+// ---------- 8. the header's Install: in view only while no other is (phase 5) ----------
+// The header (ew-header--reveal) holds "Get 2 pages free" back while the hero's Install button, the faq's or the final
+// call's shows, and shows it while none does (between them, or when the hero's is below a short first screen), so one
+// Install button is in view at a time; on phones it takes the place of "No monthly fee". The html hides it for the
+// script to show (Base.astro: without a script).
+const revealHeader = document.querySelector('.ew-header--reveal');
+const bigInstalls = [...document.querySelectorAll('[data-install="hero"], [data-install="faq"], [data-install="final"]')];
+if (revealHeader) {
+  if (!bigInstalls.length || !('IntersectionObserver' in window)) revealHeader.classList.add('is-cta');
+  else {
+    const inView = new Map();
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) inView.set(e.target, e.isIntersecting);
+      revealHeader.classList.toggle('is-cta', ![...inView.values()].some(Boolean));
+    }, { rootMargin: `-${revealHeader.offsetHeight}px 0px 0px 0px` });
+    for (const el of bigInstalls) io.observe(el);
+  }
+}
+
+// ---------- 9. What you get: once in view, the drawing walks through its six parts (phase 5) ----------
+// Pointing at a line of the legend or a part of the drawing rings the part (css, ew-explore); this tour shows that it
+// can, once, when 60 % of the drawing shows (ew-explore--tour, about 3.6 s). Nothing moves with reduced motion.
+const explore = document.querySelector('.ew-explore');
+if (explore && 'IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const io = new IntersectionObserver((entries) => {
+    if (!entries.some((e) => e.intersectionRatio >= 0.6)) return;
+    io.disconnect();
+    explore.classList.add('ew-explore--tour');
+    setTimeout(() => explore.classList.remove('ew-explore--tour'), 4000);
+  }, { threshold: 0.6 });
+  io.observe(explore.querySelector('.ew-scene') || explore);
 }

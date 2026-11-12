@@ -52,6 +52,7 @@ const config = JSON.stringify({ geo: optin ? 'optin' : 'optout', campaign, ...us
 <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15110E" media="(prefers-color-scheme: dark)">
 {measure && <script type="application/json" id="ew-config" set:html={config} />}
+<noscript><style>.ew-header.ew-header--reveal .ew-header__cta .ew-header__go{visibility:visible;opacity:1;transform:none}.ew-header.ew-header--reveal .ew-header__cta .ew-header__chips{transform:translateX(calc(-1 * (var(--go-w) + 12px)))}@media (max-width:720px){.ew-header.ew-header--reveal .ew-header__cta .ew-header__chips{display:none}}</style></noscript>
 </head>
 <body class="ew">
 {measure && <ConsentBanner />}

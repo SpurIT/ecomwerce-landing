@@ -4,6 +4,9 @@
 // under the hero. The legend's and the drawing's markup is the brand generators' (anatomyLegend, anatomyDrawn in
 // brand/tools/build-brand.mjs), copied: change it there first; the audit compares them. When g3 opens, the real
 // screenshot and its caption replace the drawing in this block and the hero's "See a sample page" points here.
+// Phase 5: after how it works, the drawing on the left and the legend on its right (the hero has its picture on the
+// right), on phones the drawing first. The legend's lines and the drawing's parts carry data-part; pointing at one rings it on the drawing and tints
+// its line (ew-explore, bundle.css), and src/scripts/landing.js (section 9) walks through the six once in view.
 import { SAMPLE } from '../data/landing.mjs';
 import { isOpen } from '../lib/site.mjs';
 
@@ -22,9 +25,9 @@ const LEGEND6 = [
   ['AI images, if you want them', 'On by default. You can switch them off before a build.'],
   ['An FAQ', 'Up to 5 answers to the questions that hold a buyer back.'],
 ];
-const legend = `<ol class="ew-legend ew-legend--described">${LEGEND6.map(([t, d], i) => `<li><b>${i + 1}</b><span><span class="ew-legend__t">${t}</span><span class="ew-legend__d">${d}</span></span></li>`).join('')}</ol>`;
+const legend = `<ol class="ew-legend ew-legend--described">${LEGEND6.map(([t, d], i) => `<li data-part="${i + 1}"><b>${i + 1}</b><span><span class="ew-legend__t">${t}</span><span class="ew-legend__d">${d}</span></span></li>`).join('')}</ol>`;
 const mark = (n: number) => `<span class="ew-mark">${n}</span>`;
-const drawn = `<figure class="ew-anatomy--drawn"><div class="ew-scene ew-scene--anatomy" role="img" aria-label="${ALT}"><div class="ew-scene__panel" aria-hidden="true"><span class="ew-an__top"><span class="ew-an__photo">${PHOTO}</span><span class="ew-an__info"><span class="ew-an__part">${mark(1)}<span class="ew-write__h"></span><span class="ew-write__h" style="width:62%"></span></span><span class="ew-an__part">${mark(2)}<span class="ew-an__price"></span><span class="ew-an__chips"><span></span><span></span><span></span></span><span class="ew-an__buy"></span></span></span></span><span class="ew-an__part">${mark(3)}<span class="ew-scene__label">Benefits</span><span class="ew-an__ben"><span class="ew-scene__line"></span><span class="ew-scene__line" style="width:84%"></span><span class="ew-scene__line" style="width:70%"></span></span></span><span class="ew-an__part">${mark(4)}<span class="ew-scene__label">Why it stands out</span><span class="ew-an__why"><span class="ew-an__img">${mark(5)}${PHOTO}</span><span class="ew-an__four"><span></span><span></span><span></span><span></span></span></span></span><span class="ew-an__part">${mark(6)}<span class="ew-scene__label">FAQ</span><span class="ew-write__q"><span class="ew-scene__line" style="width:70%"></span></span><span class="ew-write__q"><span class="ew-scene__line" style="width:56%"></span></span><span class="ew-write__q"><span class="ew-scene__line" style="width:62%"></span></span></span></div></div></figure>`;
+const drawn = `<figure class="ew-anatomy--drawn"><div class="ew-scene ew-scene--anatomy" role="img" aria-label="${ALT}"><div class="ew-scene__panel" aria-hidden="true"><span class="ew-an__top"><span class="ew-an__photo">${PHOTO}</span><span class="ew-an__info"><span class="ew-an__part" data-part="1">${mark(1)}<span class="ew-write__h"></span><span class="ew-write__h" style="width:62%"></span></span><span class="ew-an__part" data-part="2">${mark(2)}<span class="ew-an__price"></span><span class="ew-an__chips"><span></span><span></span><span></span></span><span class="ew-an__buy"></span></span></span></span><span class="ew-an__part" data-part="3">${mark(3)}<span class="ew-scene__label">Benefits</span><span class="ew-an__ben"><span class="ew-scene__line"></span><span class="ew-scene__line" style="width:84%"></span><span class="ew-scene__line" style="width:70%"></span></span></span><span class="ew-an__part" data-part="4">${mark(4)}<span class="ew-scene__label">Why it stands out</span><span class="ew-an__why"><span class="ew-an__img" data-part="5">${mark(5)}${PHOTO}</span><span class="ew-an__four"><span></span><span></span><span></span><span></span></span></span></span><span class="ew-an__part" data-part="6">${mark(6)}<span class="ew-scene__label">FAQ</span><span class="ew-write__q"><span class="ew-scene__line" style="width:70%"></span></span><span class="ew-write__q"><span class="ew-scene__line" style="width:56%"></span></span><span class="ew-write__q"><span class="ew-scene__line" style="width:62%"></span></span></span></div></div></figure>`;
 ---
 <section class="lp-section" id="anatomy" aria-labelledby="anatomy-title">
   <div class="lp-wrap">
@@ -33,13 +36,13 @@ const drawn = `<figure class="ew-anatomy--drawn"><div class="ew-scene ew-scene--
       <h2 class="ew-display-l" id="anatomy-title">Built like the product pages the courses teach</h2>
       <p class="ew-lead">A theme’s own product page starts with photos, a price and a button. Ecomwerce adds the sections a product page needs to sell, written from your product’s photos and details.</p>
     </div>
-    <div class="lp-cols lp-anatomy">
-      <div class="lp-span-7" set:html={legend} />
+    <div class:list={['lp-cols lp-anatomy', { 'ew-explore': !real }]}>
       <div class="lp-span-5 lp-anatomy__fig">
         {real
           ? <figure class="ew-anatomy"><img class="lp-anatomy__img" src={SAMPLE.screenshot.src} width={SAMPLE.screenshot.width} height={SAMPLE.screenshot.height} alt={SAMPLE.screenshot.alt} loading="lazy"><figcaption class="ew-note" style="margin-top:12px">A real page, built by Ecomwerce: {SAMPLE.product} on our development store, built {SAMPLE.built}.</figcaption></figure>
           : <Fragment set:html={drawn} />}
       </div>
+      <div class="lp-span-7" set:html={legend} />
     </div>
   </div>
 </section>

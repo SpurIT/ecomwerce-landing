@@ -1,21 +1,35 @@
 ---
-// SiteHeader (brand book): the lockup, Pricing and one small Install button; sticky.
+// SiteHeader (brand book; phase 5): the lockup and three chips, each a fact that links to its section ("Zero setup",
+// "Go live free", "No monthly fee"); "Get 2 pages free" (the Install button) joins them once the
+// hero's Install has scrolled out of view, so one Install button is in view at a time; on phones it takes their place (ew-header--reveal; src/scripts/landing.js, section 8, sets is-cta; without the
+// script the button always shows, Base.astro's noscript style). Pages without the hero (legal, 404) always show it. Sticky.
 import lockup from '../../../brand/logo/ecomwerce-lockup.svg?url';
 import lockupWhite from '../../../brand/logo/ecomwerce-lockup-white.svg?url';
 import { installHref } from '../lib/site.mjs';
 
 interface Props { campaign: string; onPage?: boolean }
 const { campaign, onPage = true } = Astro.props;
+const base = onPage ? '' : '/';
+// the chips, each a fact from the section it links to (the brand generator's HEADER_CHIPS): all three above 800px, two
+// to 721px, "No monthly fee" alone on phones (bundle.css)
+const CHIPS = [
+  ['how', '#how', 'Zero setup', 'see how it works'],
+  ['compare', '#compare', 'Go live free', 'see the comparison'],
+  ['pricing', '#pricing', 'No monthly fee', 'see pricing'],
+];
+const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
 ---
-<header class="ew-header">
+<header class:list={['ew-header', { 'ew-header--reveal': onPage }]}>
   <div class="lp-wrap ew-header__in">
     <a class="ew-header__logo" href={onPage ? '#top' : '/'} aria-label={onPage ? 'Ecomwerce, back to the top' : 'Ecomwerce, home page'}>
       <img class="ew-light-only" src={lockup} width="171" height="32" alt="">
       <img class="ew-dark-only" src={lockupWhite} width="171" height="32" alt="">
     </a>
     <nav class="ew-header__nav" aria-label="Page">
-      <a class="ew-header__link" href={onPage ? '#pricing' : '/#pricing'}>Pricing</a>
-      <a class="ew-btn ew-btn--sm" data-install="header" href={installHref(campaign, 'header')}>Install free</a>
+      <span class="ew-header__cta">
+        <span class="ew-header__chips">{CHIPS.map(([k, href, t, more]) => <a class={`ew-header__offer ew-header__offer--${k}`} href={base + href} aria-label={`${t}, ${more}`}>{t}</a>)}</span>
+        <a class="ew-btn ew-header__go" data-install="header" href={installHref(campaign, 'header')}>Get 2 pages free<Fragment set:html={ARROW} /></a>
+      </span>
     </nav>
   </div>
 </header>

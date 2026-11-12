@@ -1,6 +1,8 @@
-The landing page header: the lockup, a Pricing link and one small Install button. Sticky, so Install stays one tap away.
+The landing page header: the lockup, three chips that each link to the section that proves them, and an Install button that carries the offer. Sticky.
 
-- Markup: `header.ew-header` > `.ew-header__in` (inside the page's 1200px wrap) with `a.ew-header__logo` (both lockups, `ew-light-only` and `ew-dark-only`; the theme shows one) and `nav.ew-header__nav` (`a.ew-header__link` "Pricing", `a.ew-btn.ew-btn--sm` "Install free").
-- 72px high with the lockup at a 32px tile, 56px with a 28px tile on phones (the lockup's minimum is 24px). Below 360px the Pricing link hides.
+- Markup: `header.ew-header` > `.ew-header__in` (inside the page's 1200px wrap) with `a.ew-header__logo` (both lockups, `ew-light-only` and `ew-dark-only`; the theme shows one) and `nav.ew-header__nav` > `.ew-header__cta`: `.ew-header__chips` ("Zero setup" to How it works, "Go live free" to the comparison, "No monthly fee" to pricing; `a.ew-header__offer`, each with an aria-label that names where it goes) and `a.ew-btn.ew-header__go` "Get 2 pages free" with an arrow.
+- One Install button in view at a time (phase 5): on the landing page (`ew-header--reveal`) the button shows only while the hero's, the FAQ's and the final call's are out of view (`is-cta`, set by the page's script); the chips step aside for it, on phones it takes their place. Transforms and opacity only, so nothing shifts. Without the script, and on pages without the hero, it always shows.
+- Chips: all three above 800px, two to 721px, "No monthly fee" alone on phones. Each is a fact the page shows: no setup before the first build (the builder's defaults), publishing never charged while every other app in the comparison needs a paid plan to publish, no monthly fee.
+- 72px high with the lockup at a 32px tile, 56px with a 28px tile on phones (the lockup's minimum is 24px). Below 380px the button drops its arrow.
 - The Install button links to the App Store listing with utm parameters, like every Install button on the page.
 - One hairline in `line` under it, no shadow.
