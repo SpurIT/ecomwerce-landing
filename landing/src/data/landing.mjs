@@ -76,11 +76,8 @@ export const UTM_DEFAULTS = { utm_source: 'ecomwerce.com', utm_medium: 'landing'
 
 // The operator's inputs; an empty one shows its marked placeholder (copy.md, inputs).
 export const INPUTS = {
-  supportEmail: '',
-  legalName: '',
-  address: '',
-  register: '',
-  vatId: '',
-  representative: '',
-  legalTextsConfirmed: false, // the privacy, terms, cookie and legal notice texts confirmed by legal
+  supportEmail: 'hello@ecomwerce.com',
+  legalName: 'ECOMWERCE INC', // as the operator gave it
+  address: '4 Peddlers Row, Unit 408, Newark, DE 19702, USA',
+  legalTextsConfirmed: false, // the privacy, terms and cookie texts confirmed by legal (the legal notice left on 2026-11-19)
 };

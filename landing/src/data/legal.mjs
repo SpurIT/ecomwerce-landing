@@ -3,14 +3,14 @@
 import { INPUTS } from './landing.mjs';
 
 const ph = (v, label) => v || `[${label}]`;
-const who = `${ph(INPUTS.legalName, "SpurIT's legal name")}, ${ph(INPUTS.address, 'address')}. Contact: ${ph(INPUTS.supportEmail, 'support email')}.`;
+const who = `${ph(INPUTS.legalName, 'legal name')}, ${ph(INPUTS.address, 'address')}. Contact: ${ph(INPUTS.supportEmail, 'support email')}.`;
 
 export const LEGAL = {
   privacy: {
     path: '/privacy/',
     title: 'Privacy policy',
     sections: [
-      { p: ["Placeholder: SpurIT's privacy policy for this website goes here before launch. The lines below are a draft of what the page does, for legal to check."] },
+      { p: ["Placeholder: the privacy policy for this website goes here before launch. The lines below are a draft of what the page does, for legal to check."] },
       { h: 'Who runs this website', p: [who] },
       { h: 'What this website collects', p: ['It sets one cookie that remembers your privacy choice. With your consent, or in countries where no consent is needed for it, it loads Google Analytics, Google Ads, the Meta Pixel and the TikTok Pixel, which count visits and measure our ads (see the cookie policy).', 'It has no forms and no accounts. You install Ecomwerce on the Shopify App Store, under Shopify\'s terms.'] },
       { h: 'Your choices', p: ['"Privacy choices" at the bottom of every page changes your choice at any time. If your browser sends a Global Privacy Control signal, we treat it as a no to advertising.'] },
@@ -21,7 +21,7 @@ export const LEGAL = {
     path: '/terms/',
     title: 'Terms',
     sections: [
-      { p: ["Placeholder: the terms of use for this website go here before launch, from SpurIT's legal team."] },
+      { p: ["Placeholder: the terms of use for this website go here before launch, from our legal team."] },
       { h: 'Who runs this website', p: [who] },
       { p: ['You install Ecomwerce on the Shopify App Store, and its charges appear on your Shopify invoice. [Placeholder: the app\'s terms of service and where to find them.]'] },
     ],
@@ -30,7 +30,7 @@ export const LEGAL = {
     path: '/cookies/',
     title: 'Cookie policy',
     sections: [
-      { p: ["Placeholder: SpurIT's cookie policy goes here before launch. The table is a draft of the cookies this website can set, for legal to check against each provider's current documentation."] },
+      { p: ["Placeholder: the cookie policy for this website goes here before launch. The table is a draft of the cookies this website can set, for legal to check against each provider's current documentation."] },
       {
         h: 'Cookies on this website',
         table: [
@@ -42,15 +42,6 @@ export const LEGAL = {
         ],
       },
       { h: 'Your choice', p: ['In the EEA, the UK and Switzerland nothing but the necessary cookie is set before you choose. Elsewhere measurement and advertising are on until you turn them off. "Privacy choices" at the bottom of every page changes your choice at any time.'] },
-    ],
-  },
-  'legal-notice': {
-    path: '/legal-notice/',
-    title: 'Legal notice',
-    sections: [
-      { p: ["Placeholder: SpurIT's legal notice goes here before launch, with the details legal confirms."] },
-      { h: 'Provider', p: [ph(INPUTS.legalName, "SpurIT's legal name"), ph(INPUTS.address, 'address'), ph(INPUTS.register, 'commercial register and number'), ph(INPUTS.vatId, 'VAT ID'), ph(INPUTS.representative, 'managing director')] },
-      { h: 'Contact', p: [ph(INPUTS.supportEmail, 'support email')] },
     ],
   },
 };

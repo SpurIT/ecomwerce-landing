@@ -1,6 +1,6 @@
 ---
 // SiteFooter (brand book; phase 5): ink, in the mark's colours, under the final call's orange (which sits over its top
-// edge, landing.css): SpurIT and the contact (ad platform rules), what is on this page, the legal links and "Privacy
+// edge, landing.css): the company, its address and the contact (ad platform rules), what is on this page, the legal links and "Privacy
 // choices" (shown by the script: without it no tag loads, so there is nothing to choose). The official badge stays in
 // the final call only (phase 5), so the footer no longer repeats it.
 import lockupWhite from '../../../brand/logo/ecomwerce-lockup-white.svg?url';
@@ -15,7 +15,7 @@ const ON_PAGE = [['#how', 'How it works'], ['#anatomy', 'What you get'], ['#pric
   <div class="lp-wrap ew-footer__grid">
     <div class="ew-footer__brand">
       <img src={lockupWhite} width="150" height="28" alt="Ecomwerce" loading="lazy">
-      <p class="ew-small">Made by SpurIT</p>
+      <p class="ew-small">{INPUTS.legalName || '[legal name]'}<br>{INPUTS.address || '[address]'}</p>
       <p class="ew-small">Support: {INPUTS.supportEmail ? <a href={`mailto:${INPUTS.supportEmail}`}>{INPUTS.supportEmail}</a> : '[support email]'}</p>
     </div>
     <nav class="ew-footer__col" aria-label="On this page">
@@ -30,13 +30,12 @@ const ON_PAGE = [['#how', 'How it works'], ['#anatomy', 'What you get'], ['#pric
         <li><a href="/privacy/">Privacy policy</a></li>
         <li><a href="/terms/">Terms</a></li>
         <li><a href="/cookies/">Cookies</a></li>
-        <li><a href="/legal-notice/">Legal notice</a></li>
         {choices && <li data-consent-link hidden><button type="button" data-consent-open="settings">Privacy choices</button></li>}
       </ul>
     </div>
     <div class="ew-footer__legal">
       <p class="ew-note">Shopify is a trademark of Shopify Inc.</p>
-      <p class="ew-note">© 2026 SpurIT</p>
+      <p class="ew-note">© 2026 {INPUTS.legalName || '[legal name]'}</p>
     </div>
   </div>
 </footer>
