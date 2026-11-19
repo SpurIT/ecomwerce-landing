@@ -26,6 +26,7 @@ const { kind, id, path, optin } = Astro.props;
 const v = kind === 'landing' ? VARIANTS[id] : null;
 const d = kind === 'legal' ? LEGAL[id] : null;
 const headline = v ? gated(v.headline) : '';
+const updated = d && new Date(d.updated + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 ---
 {v && (
 <Base title={gated(v.title)} path={path} index={id === 'default'} optin={optin} campaign={id}>
@@ -44,16 +45,19 @@ const headline = v ? gated(v.headline) : '';
   <main id="top" class="lp-wrap">
     <article class="lp-doc">
       <h1 class="ew-display-l">{d.title}</h1>
-      {d.sections.map((s, i) => (
+      <p class="lp-updated">Last updated {updated}</p>
+      {d.sections.map((s) => (
         <Fragment>
           {s.h && <h2>{s.h}</h2>}
-          {s.p && s.p.map((p) => <p class={i === 0 ? 'lp-draft' : undefined}>{p}</p>)}
+          {s.p && s.p.map((p) => <p set:html={p} />)}
+          {s.ul && <ul>{s.ul.map((li) => <li set:html={li} />)}</ul>}
           {s.table && (
             <table>
-              <thead><tr><th>Kind</th><th>Cookie</th><th>What it does</th><th>Kept for</th></tr></thead>
-              <tbody>{s.table.map((r) => <tr>{r.map((c) => <td>{c}</td>)}</tr>)}</tbody>
+              <thead><tr>{s.table.head.map((h) => <th>{h}</th>)}</tr></thead>
+              <tbody>{s.table.rows.map((r) => <tr>{r.map((c, k) => <td data-label={s.table.head[k]}>{c}</td>)}</tr>)}</tbody>
             </table>
           )}
+          {s.after && s.after.map((p) => <p set:html={p} />)}
         </Fragment>
       ))}
     </article>
