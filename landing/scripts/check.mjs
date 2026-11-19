@@ -50,8 +50,8 @@ const TAG_HOSTS = /googletagmanager\.com|connect\.facebook\.net|analytics\.tikto
 const listing = new URL(LISTING_URL);
 // every dollar amount the page may show: the price and the chart (BL-1), the ad test's sourced figures, the placeholder
 // product's price (TASK.md phase 3 RESEARCH), the comparison's prices from its one source and Shopify's $1 offer that the
-// faq names (phase 4: the operator's fact, $1 a month for 3 months)
-const DOLLARS = new Set(['$3', '$9', '$36', '$60', '$150', '$250', '$50', '$34.00', '$1', ...CMP_DOLLARS]);
+// faq names (phase 4: the operator's fact, $1 a month for 3 months), and the floor of the liability cap in the terms
+const DOLLARS = new Set(['$3', '$9', '$36', '$60', '$150', '$250', '$50', '$34.00', '$1', '$100', ...CMP_DOLLARS]);
 // the order of the sections below the hero (3-landing-page.md, phase 5: how it works before what you get); a closed gate's section is absent
 const ORDER = ['how', 'anatomy', 'honest', 'pricing', 'compare', 'faq'];
 const REQUIRED = ['how', 'anatomy', 'pricing', 'compare', 'faq'];
