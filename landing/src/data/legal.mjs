@@ -137,7 +137,7 @@ export const LEGAL = {
         p: [
           'You keep all rights to the products, photos, texts and other content you give the Service ("Your Content"). You allow us to use Your Content only to provide the Service to you. You confirm that you have the rights to Your Content and that our use of it under these terms does not break the law or anyone\'s rights.',
           'AI writes and illustrates the pages. AI output can be wrong, incomplete, or similar to content made for others. Before a page goes live, check it: product facts, prices, claims about results or health, shipping, returns and guarantees, and anything that needs a licence or approval. You are responsible for what you publish and sell, and for following the laws and Shopify policies that apply to your store.',
-          'Once you have paid for them, the pages, texts and images the app makes for you ("Output") are yours to use in your store and your marketing. We do not claim ownership of Output. Because AI can make similar output for others, we cannot promise that Output is unique or protected by copyright.',
+          'The pages, texts and images the app makes for you ("Output") are yours to use in your store and your marketing. We do not claim ownership of Output. Because AI can make similar output for others, we cannot promise that Output is unique or protected by copyright.',
           'The themes the app builds are based on Shopify\'s Horizon theme, whose license from Shopify applies to its code. The pages are built with the app\'s blocks, so their content disappears from your store if you uninstall the app. The app tells you so before you go live.',
         ],
       },
