@@ -44,4 +44,4 @@ The plan made during the design work; nothing of it exists yet.
 - Response headers from `landing/edge/headers.mjs`, plus Strict-Transport-Security at CloudFront. The page's own Content-Security-Policy is a meta tag built from the tag ids in use (`landing/src/lib/site.mjs`).
 - Caching: html short-cached (it changes with every deploy), the hashed files under `/_astro/` immutable, an invalidation after each deploy.
 - CI: GitHub Actions on a push to `master`: build, `npm test`, sync `dist/` to S3, invalidate. AWS access through a GitHub OIDC role, no keys in the repository. Optional: `npm run check` on pull requests (Playwright and Lighthouse; about 10 minutes).
-- Before launch the site still needs its inputs, all in `landing/src/data/landing.mjs` and `landing/src/config/tags.mjs`: the App Store listing url, the support email, the legal texts, the ad tag ids.
+- Before launch the site still needs its inputs, all in `landing/src/data/landing.mjs` and `landing/src/config/tags.mjs`: the App Store listing url, the legal texts, the ad tag ids (the company details and the support email are in).

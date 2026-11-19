@@ -81,7 +81,7 @@ const withoutConfig = (html) => html.replace(/<script type="application\/json"[\
 if (step('audit')) {
   const dist = HERE + 'dist/';
   const files = htmlFiles(dist);
-  check('15 pages built (3 variants and 4 legal pages, each also under /_optin/, and the 404)', files.length === 15, String(files.length));
+  check('13 pages built (3 variants and 3 legal pages, each also under /_optin/, and the 404)', files.length === 13, String(files.length));
   for (const f of files) {
     const rel = f.slice(dist.length);
     const html = readFileSync(f, 'utf8');
@@ -279,7 +279,7 @@ if (step('shots')) {
   await shot('default-768', MAIN, '/', { width: 768, height: 1024 });
   await shot('privacy-1440', MAIN, '/privacy/', {});
   await shot('cookies-390', MAIN, '/cookies/', { width: 390, height: 844 });
-  await shot('legal-notice-390', MAIN, '/legal-notice/', { width: 390, height: 844, country: 'DE' });
+  await shot('terms-390', MAIN, '/terms/', { width: 390, height: 844, country: 'DE' });
   await shot('404-390', MAIN, '/no-such-page/', { width: 390, height: 844, expect404: true });
   await shot('gates-open-1440', GATES, '/', {});
   await shot('gates-open-390', GATES, '/', { width: 390, height: 844 });
