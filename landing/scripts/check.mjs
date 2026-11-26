@@ -111,7 +111,8 @@ if (step('audit')) {
     if (variant) {
       const prices = text.split(PRICE).length - 1;
       const caps = text.split('Monthly cap of $60').length - 1;
-      if (prices < 4 || caps < 4) problems.push(`price sentence ${prices}x, cap ${caps}x`);
+      // the cap is said in the pricing card, the faq and the final call; the hero's price sentence goes without it
+      if (prices < 4 || caps < 3) problems.push(`price sentence ${prices}x, cap ${caps}x`);
       const order = [...html.matchAll(/<section class="lp-section[^"]*" id="([a-z]+)"/g)].map((m) => m[1]);
       if (order.join() !== ORDER.filter((id) => order.includes(id)).join() || !REQUIRED.every((id) => order.includes(id))) problems.push(`sections ${order.join(', ')}`);
     }
